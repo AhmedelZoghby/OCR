@@ -1,3 +1,45 @@
+Model A - Overall Rating
+Amazing
+
+Model returned the perfect response, and completely answered the prompt
+
+Pretty Good
+
+Model returned a good response, with the correct final answer
+
+Okay
+
+Model returned the wrong final answer
+
+Pretty Bad
+
+Model failed to return a valid solution, but tried
+
+Horrible
+
+Model completely failed, solution is completely illogical
+
+We are ONLY looking for prompts that elicit an Okay, Pretty Bad, or Horrible (from both models)
+
+
+Amazing
+Pretty Good
+Okay
+Pretty Bad
+Horrible
+Model A - Rating Explanation
+Why did you rate Model A as Okay?
+
+Please write at least a paragraph or two here -- the more detailed the better!
+
+Consider all of the areas listed in the table below, where applicable.
+
+
+Assessment Areas
+
+Model B
+
+
 {
   "candidates": [
     {
