@@ -1,0 +1,47 @@
+The golden response should read as a worked solution to the problem, walking the reader through the key reasoning steps, presenting the configuration (assignments, schedules, allocations, etc.) as it is built up, and arriving at the optimal value at the end.
+
+Structure:
+
+Begin with any foundational calculations or observations that set up the problem (e.g., total demand, available capacity, key constraints that shape the solution).
+
+Work through the solution logically, presenting decision variable assignments (tier breakdowns, route assignments, production quantities, etc.) in clearly labeled subsections using markdown headers (## and ###).
+
+Use inline arithmetic to show how values are derived (e.g., $214 \times 28 = 5992$). The reader should be able to follow and verify the math.
+
+Conclude with the optimal value in the exact machine-readable format specified in the prompt
+
+What to include:
+
+The reasoning that explains why the configuration is what it is -- not just the raw assignments, but the logic connecting them (e.g., "Since T3 only has 45 employees, the remaining demand on Line 9 must be covered by T1")
+
+All decision variable assignments
+
+Key constraint verification woven into the reasoning where natural (e.g., "This is exactly how many employees T1 has, so T1 must have all employees working every day")
+
+The optimal value in the prompt-specified format as the final element of the response
+
+What to exclude (UNLESS explicitly requested in the prompt):
+
+Code or code snippets (this is submitted separately)
+
+A walkthrough of the solving methodology or tool implementation details
+
+A step-by-step explanation of how the optimal value was derived
+
+If the prompt explicitly asks for any of the above (e.g., "explain your approach" or "include X Python Code"), include it as a clearly labeled additional section after those listed above.
+
+
+Formatting Standards
+Use markdown headers to organize logical sections of the solution
+
+Use LaTeX notation for inline math expressions
+
+Use tables for any structured data where applicable
+
+Use bullet points or line-by-line breakdowns for assignments and allocations
+
+All numerical values should be formatted consistently (units, decimal places, currency symbols)
+
+No spelling or grammatical errors
+
+Match the register and tone of the prompt
