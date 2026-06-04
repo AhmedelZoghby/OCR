@@ -1,3 +1,43 @@
+
+Tool Selection
+
+Tasks should be designed to be unsolvable unless a constraint optimizer is used, to stop models from solving via step-by-step chain of thought instead of calling a solver.
+
+Sub-optimal tool use is a key failure mode of interest! Potential failure modes here include: (1) writing bespoke Python code (e.g., using numpy or implementing an algorithm) rather than calling a trusted ORTools solver, which can lead to slow, non-optimized solutions, or contain mistakes; and (2) selecting a simpler tool for non-linear or complex constraint problems when there is a more appropriate solver available.
+
+Encoding
+
+Does the model correctly encode the prompt and account for all of the relevant inputs?
+
+Does it miss any objectives or constraints?
+
+Does it maximize instead of minimize, or vice versa?
+
+Does it miss or misinterpret any of the input data?
+
+Does the model successfully filter any extraneous or irrelevant information in the prompt?
+
+Execution
+
+Does the model correctly execute the solver?
+
+Are the convergence criteria and other hyperparameters of the solver configured correctly?
+
+Post-processing
+
+Does the query require additional modeling or post-processing of the new solver outputs?
+
+Results
+
+Is the optimal value or configuration correct?
+
+Remember, the answer to the above must be NO for both models in order for your task to be valid!
+
+Is the solution feasible, but sub-optimal?
+
+
+
+
 Model A - Overall Rating
 Amazing
 
