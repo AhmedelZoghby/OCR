@@ -1,0 +1,699 @@
+Solver status: OPTIMAL                                      
+Wall time: 298.79s
+
+{"minimum_cost": "6974"}
+
+{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+
+{
+  "schedule": {
+    "Sunday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Monday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Tuesday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Wednesday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DD",
+          "DH"
+        ],
+        "Projects": [
+          "PB",
+          "PA",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Thursday": {
+      "Morning": {
+        "Devs": [
+          "DB",
+          "DC"
+        ],
+        "Projects": [
+          "PC",
+          "PC"
+        ]
+      }
+    },
+    "Friday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DB",
+          "DH"
+        ],
+        "Projects": [
+          "PB",
+          "PC",
+          "PE"
+        ]
+      }
+    },
+    "Saturday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PB",
+          "PE",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DB",
+          "DC",
+          "DM"
+        ],
+        "Projects": [
+          "PC",
+          "PC",
+          "PA"
+        ]
+      }
+    }
+  }
+}
+
+============================================================
+DEVELOPER SUMMARY
+============================================================
+DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
+DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
+DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
+DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
+DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
+DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
+DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
+DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
+DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
+
+============================================================
+PROJECT DISTINCT DEVELOPER COUNTS
+============================================================
+PA: 2 -> ['DD', 'DM']
+PB: 1 -> ['DA']
+PC: 2 -> ['DB', 'DC']
+PD: 2 -> ['DC', 'DN']
+PE: 3 -> ['DH', 'DO', 'DP']
+
+============================================================
+PE ACTIVE SHIFTS
+============================================================
+['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
+PE evening shift count: 2
+
+============================================================
+ONBOARDING BREAKDOWN
+============================================================
+PA: ['DD', 'DM']
+PB: ['DA']
+PC: ['DB', 'DC']
+PD: ['DC', 'DN']
+PE: ['DH', 'DO', 'DP']
+(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
+Solver status: FEASIBLE
+Wall time: 300.09s
+
+{"minimum_cost": "6974"}
+
+{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+
+{
+  "schedule": {
+    "Sunday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Monday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Tuesday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Wednesday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DD",
+          "DH"
+        ],
+        "Projects": [
+          "PB",
+          "PA",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Thursday": {
+      "Morning": {
+        "Devs": [
+          "DB",
+          "DC"
+        ],
+        "Projects": [
+          "PC",
+          "PC"
+        ]
+      }
+    },
+    "Friday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DB",
+          "DO"
+        ],
+        "Projects": [
+          "PB",
+          "PC",
+          "PE"
+        ]
+      }
+    },
+    "Saturday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DH",
+          "DP"
+        ],
+        "Projects": [
+          "PB",
+          "PE",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DB",
+          "DC",
+          "DM"
+        ],
+        "Projects": [
+          "PC",
+          "PC",
+          "PA"
+        ]
+      }
+    }
+  }
+}
+
+============================================================
+DEVELOPER SUMMARY
+============================================================
+DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
+DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
+DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
+DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
+DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
+DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
+DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
+DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
+DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
+
+============================================================
+PROJECT DISTINCT DEVELOPER COUNTS
+============================================================
+PA: 2 -> ['DD', 'DM']
+PB: 1 -> ['DA']
+PC: 2 -> ['DB', 'DC']
+PD: 2 -> ['DC', 'DN']
+PE: 3 -> ['DH', 'DO', 'DP']
+
+============================================================
+PE ACTIVE SHIFTS
+============================================================
+['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
+PE evening shift count: 2
+
+============================================================
+ONBOARDING BREAKDOWN
+============================================================
+PA: ['DD', 'DM']
+PB: ['DA']
+PC: ['DB', 'DC']
+PD: ['DC', 'DN']
+PE: ['DH', 'DO', 'DP']
+(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
+Solver status: FEASIBLE
+Wall time: 300.09s
+
+{"minimum_cost": "6974"}
+
+{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+
+{
+  "schedule": {
+    "Sunday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Monday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Tuesday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Wednesday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DD",
+          "DH"
+        ],
+        "Projects": [
+          "PB",
+          "PA",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Thursday": {
+      "Morning": {
+        "Devs": [
+          "DB",
+          "DC"
+        ],
+        "Projects": [
+          "PC",
+          "PC"
+        ]
+      }
+    },
+    "Friday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DB",
+          "DO"
+        ],
+        "Projects": [
+          "PB",
+          "PC",
+          "PE"
+        ]
+      }
+    },
+    "Saturday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DH",
+          "DP"
+        ],
+        "Projects": [
+          "PB",
+          "PE",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DB",
+          "DC",
+          "DM"
+        ],
+        "Projects": [
+          "PC",
+          "PC",
+          "PA"
+        ]
+      }
+    }
+  }
+}
+
+============================================================
+DEVELOPER SUMMARY
+============================================================
+DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
+DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
+DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
+DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
+DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
+DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
+DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
+DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
+DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
+
+============================================================
+PROJECT DISTINCT DEVELOPER COUNTS
+============================================================
+PA: 2 -> ['DD', 'DM']
+PB: 1 -> ['DA']
+PC: 2 -> ['DB', 'DC']
+PD: 2 -> ['DC', 'DN']
+PE: 3 -> ['DH', 'DO', 'DP']
+
+============================================================
+PE ACTIVE SHIFTS
+============================================================
+['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
+PE evening shift count: 2
+
+============================================================
+ONBOARDING BREAKDOWN
+============================================================
+PA: ['DD', 'DM']
+PB: ['DA']
+PC: ['DB', 'DC']
+PD: ['DC', 'DN']
+PE: ['DH', 'DO', 'DP']
+(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
+Solver status: OPTIMAL
+Wall time: 242.23s
+
+{"minimum_cost": "6974"}
+
+{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+
+{
+  "schedule": {
+    "Sunday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Monday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      }
+    },
+    "Tuesday": {
+      "Morning": {
+        "Devs": [
+          "DC",
+          "DN"
+        ],
+        "Projects": [
+          "PD",
+          "PD"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Wednesday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DD",
+          "DH"
+        ],
+        "Projects": [
+          "PB",
+          "PA",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DM",
+          "DO",
+          "DP"
+        ],
+        "Projects": [
+          "PA",
+          "PE",
+          "PE"
+        ]
+      }
+    },
+    "Thursday": {
+      "Morning": {
+        "Devs": [
+          "DB",
+          "DC"
+        ],
+        "Projects": [
+          "PC",
+          "PC"
+        ]
+      }
+    },
+    "Friday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DB",
+          "DO"
+        ],
+        "Projects": [
+          "PB",
+          "PC",
+          "PE"
+        ]
+      }
+    },
+    "Saturday": {
+      "Morning": {
+        "Devs": [
+          "DA",
+          "DH",
+          "DP"
+        ],
+        "Projects": [
+          "PB",
+          "PE",
+          "PE"
+        ]
+      },
+      "Evening": {
+        "Devs": [
+          "DB",
+          "DC",
+          "DM"
+        ],
+        "Projects": [
+          "PC",
+          "PC",
+          "PA"
+        ]
+      }
+    }
+  }
+}
+
+============================================================
+DEVELOPER SUMMARY
+============================================================
+DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
+DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
+DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
+DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
+DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
+DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
+DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
+DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
+DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
+
+============================================================
+PROJECT DISTINCT DEVELOPER COUNTS
+============================================================
+PA: 2 -> ['DD', 'DM']
+PB: 1 -> ['DA']
+PC: 2 -> ['DB', 'DC']
+PD: 2 -> ['DC', 'DN']
+PE: 3 -> ['DH', 'DO', 'DP']
+
+============================================================
+PE ACTIVE SHIFTS
+============================================================
+['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
+PE evening shift count: 2
+
+============================================================
+ONBOARDING BREAKDOWN
+============================================================
+PA: ['DD', 'DM']
+PB: ['DA']
+PC: ['DB', 'DC']
+PD: ['DC', 'DN']
+PE: ['DH', 'DO', 'DP']
