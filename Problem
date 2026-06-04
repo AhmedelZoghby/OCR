@@ -1,0 +1,102 @@
+I am working as a scrum master in eXtra(united electronics). I am tasked with setting up the developers' shifts for the next week to make sure we finish our scope. For the next week's release we have 5 projects. We have a team of developers of 20. Each has a different pay per hour and each is tasked to specfic projects. There is some contraints however such as Days off or conflicts between team members. Each Day we have 2 shifts Morning Shift and evening shift each is 8 hours. Each Shift up to 3 developers can work. A Devloper can work only 1 Shift per day. It must be noted that while developer pay is the same in the morning or evening shifts. Evening shifts require more electricity in the building around 10 times more the cost of operating a morning shift is 20 USD while an evening shift 200 USD. A shift is considered to operate if at least one developer works. Our goal is to find the optimal schedule that completes all the work required within a week at the absolute minimum cost
+where cost equal = ( baseHours x Rate  + OvertimeHours x 1.5Rate  ) for each developer + 20 x number of  morning shifts + 200 x number of evening shifts 
++ Total Onboarding Costs
+
+
+
+Here are the 5 Projects we are working on: 
+Project - Name - Effort - Dependency
+
+Project A: BNPL Integration: 32 Hours : Project D must be completed fully first
+Project B: Choicebox: 24 Hours : Must be worked on Simultaneously with Project E
+Project C: Social Messaging: 40 Hours: Project A must have 24 hours completed first
+Project D: Loyalty Program: 48 Hours: None
+Project E: Payment Gateway: 64 hours: None
+
+Developers Hourly Rates:
+
+Dev A: $20/hr | Eligible for: Project A, Project B
+
+Dev B: $22/hr | Eligible for: Project B, Project C
+
+Dev C: $24/hr | Eligible for: Project C, Project D
+
+Dev D: $25/hr | Eligible for: Project A, Project D
+
+Dev E: $26/hr | Eligible for: Project A, Project C
+
+Dev F: $28/hr | Eligible for: Project B, Project D
+
+Dev G: $30/hr | Eligible for: Project A, Project B , Project C,
+
+Dev H: $32/hr | Eligible for: Project A, Project B , Project C, Project E
+
+Dev I: $40/hr | Eligible for: Project E
+
+Dev J: $60/hr | Eligible for: All Projects (A, B, C, D , E)
+
+Dev K: $85/hr | Eligible for: All Projects (A, B, C, D, E)
+
+Dev L: $85/hr | Eligible for: All Projects (A, B, C, D , E)
+
+Dev M: $23/hr | Eligible for: Project A, Project D
+
+Dev N: $24/hr | Eligible for: Project B, Project C , Project D
+
+Dev O: $27/hr | Eligible for: Project A, Project C, Project E
+
+Dev P: $29/hr | Eligible for: Project B, Project D , Project E
+
+Dev Q: $31/hr | Eligible for: Project A, Project B , Project D
+
+Dev R $33/hr | Eligible for: Project E , Project C , Project D
+
+Dev S: $36/hr | Eligible for: Project A, Project B , Project C, Project E
+
+Dev T: $38/hr | Eligible for: Project D , Project E
+
+Constraints:
+
+Project E must be worked in exactly 5 Shifts with at least 2 evening shifts
+Dev A doesn't work on night shifts
+Dev L doesn't work on Day Shifts
+Dev J and K dont work on Sunday
+Dev M Off Monday and Friday
+Dev N no Evenings  doesn't work with Dev B
+Dev O max 3 shifts per week
+Dev R Off wednesday and Thurday doesn't work with Dev C
+Dev S If works on project E can not work on Project B
+Dev T onboarding cost if her works in the same shift with Dev I
+Dev C and D can't work together due to conflict
+Dev B is off on Tuesday
+If a developer works more than 24 Hours per week he is paid an overtime fee at 1.5x his base rate
+A developer can work a max of 5 shifts per week
+All projects may be assigned to at most 2 distinct developers across the week. The only exception is Project E can be assigned to 3 distincit developers
+
+If Dev I work on Project E he must be accompanied in the same shift with either Dev L, J or K
+
+If a developer works an evening shift they can't work a morning shift the next day
+
+In any shift at most 2 developers can work on the same project
+
+Exactly one developer should work 5 shifts
+
+Everytime a new developer is assigned to a project there is an onboarding cost
+
+PA: 90
+PB: 70
+PC: 80
+PD: 60 
+PE: 120
+
+
+
+
+The output must be minimum cost in JSON format e.g. { "minimum_cost": "3206" }).
+and must also include the schedule eg: 
+"schedule": {
+    "Sunday": {
+      "Morning": {"Devs": ["DA", "DB"], "Projects": ["PC", "PD"]},
+      "Evening": {"Devs": ["DC", "DD"], "Projects": ["PA", "PB"]}
+
+
