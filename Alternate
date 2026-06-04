@@ -1,699 +1,223 @@
-Solver status: OPTIMAL                                      
-Wall time: 298.79s
+A configuration is considered an alternate optimum if:
 
-{"minimum_cost": "6974"}
+it satisfies all constraints,
+it has the same objective value as the best known solution, and
+it is not identical to the other optimal schedule.
 
-{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+In your case, both schedules:
+
+
+satisfy the project effort requirements,
+
+
+satisfy the timing dependencies,
+
+
+satisfy the developer restrictions,
+
+
+satisfy the Project E exact-shift pattern,
+
+
+and produce the exact same cost breakdown:
+
+
+Labor cost = 5344
+
+
+Shift operating cost = 740
+
+
+Onboarding cost = 890
+
+
+Total = 6974
+
+
+So they are both optimal.
+
+Why multiple optimal solutions exist here
+The reason is that your model still allows a small amount of symmetry.
+In particular, one part of the schedule can be rearranged without affecting:
+
+who gets overtime,
+how many morning/evening shifts are used,
+how many distinct developers are assigned to each project,
+or the onboarding cost.
+
+That is exactly what happens with DH and DO in your solution.
+
+Example of the two optimal configurations
+Optimal Configuration A
+JSON{  "minimum_cost": "6974",  "schedule": {    "Sunday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      }    },    "Monday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      }    },    "Tuesday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      },      "Evening": {        "Devs": ["DM", "DO", "DP"],        "Projects": ["PA", "PE", "PE"]      }    },    "Wednesday": {      "Morning": {        "Devs": ["DA", "DD", "DH"],        "Projects": ["PB", "PA", "PE"]      },      "Evening": {        "Devs": ["DM", "DO", "DP"],        "Projects": ["PA", "PE", "PE"]      }    },    "Thursday": {      "Morning": {        "Devs": ["DB", "DC"],        "Projects": ["PC", "PC"]      }    },    "Friday": {      "Morning": {        "Devs": ["DA", "DB", "DH"],        "Projects": ["PB", "PC", "PE"]      }    },    "Saturday": {      "Morning": {        "Devs": ["DA", "DO", "DP"],        "Projects": ["PB", "PE", "PE"]      },      "Evening": {        "Devs": ["DB", "DC", "DM"],        "Projects": ["PC", "PC", "PA"]      }    }  }}``Show more lines
+
+Optimal Configuration B
+JSON{  "minimum_cost": "6974",  "schedule": {    "Sunday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      }    },    "Monday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      }    },    "Tuesday": {      "Morning": {        "Devs": ["DC", "DN"],        "Projects": ["PD", "PD"]      },      "Evening": {        "Devs": ["DM", "DO", "DP"],        "Projects": ["PA", "PE", "PE"]      }    },    "Wednesday": {      "Morning": {        "Devs": ["DA", "DD", "DH"],        "Projects": ["PB", "PA", "PE"]      },      "Evening": {        "Devs": ["DM", "DO", "DP"],        "Projects": ["PA", "PE", "PE"]      }    },    "Thursday": {      "Morning": {        "Devs": ["DB", "DC"],        "Projects": ["PC", "PC"]      }    },    "Friday": {      "Morning": {        "Devs": ["DA", "DB", "DO"],        "Projects": ["PB", "PC", "PE"]      }    },    "Saturday": {      "Morning": {        "Devs": ["DA", "DH", "DP"],        "Projects": ["PB", "PE", "PE"]      },      "Evening": {        "Devs": ["DB", "DC", "DM"],        "Projects": ["PC", "PC", "PA"]      }    }  }}Show more lines
+
+What changed between them?
+The only meaningful change is this swap:
+Configuration A
 
 {
+  "minimum_cost": "6974",
   "schedule": {
     "Sunday": {
       "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
       }
     },
     "Monday": {
       "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
       }
     },
     "Tuesday": {
       "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
       },
       "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
+        "Devs": ["DM", "DO", "DP"],
+        "Projects": ["PA", "PE", "PE"]
       }
     },
     "Wednesday": {
       "Morning": {
-        "Devs": [
-          "DA",
-          "DD",
-          "DH"
-        ],
-        "Projects": [
-          "PB",
-          "PA",
-          "PE"
-        ]
+        "Devs": ["DA", "DD", "DH"],
+        "Projects": ["PB", "PA", "PE"]
       },
       "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
+        "Devs": ["DM", "DO", "DP"],
+        "Projects": ["PA", "PE", "PE"]
       }
     },
     "Thursday": {
       "Morning": {
-        "Devs": [
-          "DB",
-          "DC"
-        ],
-        "Projects": [
-          "PC",
-          "PC"
-        ]
+        "Devs": ["DB", "DC"],
+        "Projects": ["PC", "PC"]
       }
     },
     "Friday": {
       "Morning": {
-        "Devs": [
-          "DA",
-          "DB",
-          "DH"
-        ],
-        "Projects": [
-          "PB",
-          "PC",
-          "PE"
-        ]
+        "Devs": ["DA", "DB", "DH"],
+        "Projects": ["PB", "PC", "PE"]
       }
     },
     "Saturday": {
       "Morning": {
-        "Devs": [
-          "DA",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PB",
-          "PE",
-          "PE"
-        ]
+        "Devs": ["DA", "DO", "DP"],
+        "Projects": ["PB", "PE", "PE"]
       },
       "Evening": {
-        "Devs": [
-          "DB",
-          "DC",
-          "DM"
-        ],
-        "Projects": [
-          "PC",
-          "PC",
-          "PA"
-        ]
+        "Devs": ["DB", "DC", "DM"],
+        "Projects": ["PC", "PC", "PA"]
+      }
+    }
+  }
+}
+``
+
+Friday Morning uses DH on PE
+Saturday Morning uses DO on PE
+
+Configuration B
+
+{
+  "minimum_cost": "6974",
+  "schedule": {
+    "Sunday": {
+      "Morning": {
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
+      }
+    },
+    "Monday": {
+      "Morning": {
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
+      }
+    },
+    "Tuesday": {
+      "Morning": {
+        "Devs": ["DC", "DN"],
+        "Projects": ["PD", "PD"]
+      },
+      "Evening": {
+        "Devs": ["DM", "DO", "DP"],
+        "Projects": ["PA", "PE", "PE"]
+      }
+    },
+    "Wednesday": {
+      "Morning": {
+        "Devs": ["DA", "DD", "DH"],
+        "Projects": ["PB", "PA", "PE"]
+      },
+      "Evening": {
+        "Devs": ["DM", "DO", "DP"],
+        "Projects": ["PA", "PE", "PE"]
+      }
+    },
+    "Thursday": {
+      "Morning": {
+        "Devs": ["DB", "DC"],
+        "Projects": ["PC", "PC"]
+      }
+    },
+    "Friday": {
+      "Morning": {
+        "Devs": ["DA", "DB", "DO"],
+        "Projects": ["PB", "PC", "PE"]
+      }
+    },
+    "Saturday": {
+      "Morning": {
+        "Devs": ["DA", "DH", "DP"],
+        "Projects": ["PB", "PE", "PE"]
+      },
+      "Evening": {
+        "Devs": ["DB", "DC", "DM"],
+        "Projects": ["PC", "PC", "PA"]
       }
     }
   }
 }
 
-============================================================
-DEVELOPER SUMMARY
-============================================================
-DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
-DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
-DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
-DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
-DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
-DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
-DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
-DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
-DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
+Friday Morning uses DO on PE
+Saturday Morning uses DH on PE
 
-============================================================
-PROJECT DISTINCT DEVELOPER COUNTS
-============================================================
-PA: 2 -> ['DD', 'DM']
-PB: 1 -> ['DA']
-PC: 2 -> ['DB', 'DC']
-PD: 2 -> ['DC', 'DN']
-PE: 3 -> ['DH', 'DO', 'DP']
+Everything else is the same.
 
-============================================================
-PE ACTIVE SHIFTS
-============================================================
-['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
-PE evening shift count: 2
+Why both are still optimal
+This swap does not change any cost component:
+1. Labor cost stays the same
+Because both developers still work the same total number of shifts overall.
+2. Shift operating cost stays the same
+The same shifts remain active:
 
-============================================================
-ONBOARDING BREAKDOWN
-============================================================
-PA: ['DD', 'DM']
-PB: ['DA']
-PC: ['DB', 'DC']
-PD: ['DC', 'DN']
-PE: ['DH', 'DO', 'DP']
-(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
-Solver status: FEASIBLE
-Wall time: 300.09s
+Friday Morning is still used
+Saturday Morning is still used
 
-{"minimum_cost": "6974"}
+3. Onboarding cost stays the same
+Both DH and DO already appear on PE somewhere in the week, so swapping which morning they work on does not create or remove any developer-project pair.
+So the objective value remains exactly:
+JSON{"minimum_cost": "6974"}Show more lines
 
-{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
+Short explanation you can provide
+You can say this:
 
-{
-  "schedule": {
-    "Sunday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Monday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Tuesday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Wednesday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DD",
-          "DH"
-        ],
-        "Projects": [
-          "PB",
-          "PA",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Thursday": {
-      "Morning": {
-        "Devs": [
-          "DB",
-          "DC"
-        ],
-        "Projects": [
-          "PC",
-          "PC"
-        ]
-      }
-    },
-    "Friday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DB",
-          "DO"
-        ],
-        "Projects": [
-          "PB",
-          "PC",
-          "PE"
-        ]
-      }
-    },
-    "Saturday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DH",
-          "DP"
-        ],
-        "Projects": [
-          "PB",
-          "PE",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DB",
-          "DC",
-          "DM"
-        ],
-        "Projects": [
-          "PC",
-          "PC",
-          "PA"
-        ]
-      }
-    }
-  }
-}
+Multiple valid configurations exist because the model has alternate optima. In particular, the assignments of DH and DO on PE can be swapped between Friday Morning and Saturday Morning without violating any constraints and without changing labor cost, shift operating cost, or onboarding cost. Therefore, both schedules are feasible and both achieve the same minimum total cost of 6974.
 
-============================================================
-DEVELOPER SUMMARY
-============================================================
-DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
-DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
-DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
-DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
-DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
-DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
-DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
-DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
-DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
 
-============================================================
-PROJECT DISTINCT DEVELOPER COUNTS
-============================================================
-PA: 2 -> ['DD', 'DM']
-PB: 1 -> ['DA']
-PC: 2 -> ['DB', 'DC']
-PD: 2 -> ['DC', 'DN']
-PE: 3 -> ['DH', 'DO', 'DP']
+Final answer
+Yes — your problem has multiple valid optimal configurations.
+Example:
+Two optimal schedules exist where:
 
-============================================================
-PE ACTIVE SHIFTS
-============================================================
-['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
-PE evening shift count: 2
+one uses DH on Friday Morning and DO on Saturday Morning for PE,
+while the other uses DO on Friday Morning and DH on Saturday Morning for PE.
 
-============================================================
-ONBOARDING BREAKDOWN
-============================================================
-PA: ['DD', 'DM']
-PB: ['DA']
-PC: ['DB', 'DC']
-PD: ['DC', 'DN']
-PE: ['DH', 'DO', 'DP']
-(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
-Solver status: FEASIBLE
-Wall time: 300.09s
-
-{"minimum_cost": "6974"}
-
-{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
-
-{
-  "schedule": {
-    "Sunday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Monday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Tuesday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Wednesday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DD",
-          "DH"
-        ],
-        "Projects": [
-          "PB",
-          "PA",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Thursday": {
-      "Morning": {
-        "Devs": [
-          "DB",
-          "DC"
-        ],
-        "Projects": [
-          "PC",
-          "PC"
-        ]
-      }
-    },
-    "Friday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DB",
-          "DO"
-        ],
-        "Projects": [
-          "PB",
-          "PC",
-          "PE"
-        ]
-      }
-    },
-    "Saturday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DH",
-          "DP"
-        ],
-        "Projects": [
-          "PB",
-          "PE",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DB",
-          "DC",
-          "DM"
-        ],
-        "Projects": [
-          "PC",
-          "PC",
-          "PA"
-        ]
-      }
-    }
-  }
-}
-
-============================================================
-DEVELOPER SUMMARY
-============================================================
-DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
-DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
-DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
-DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
-DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
-DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
-DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
-DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
-DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
-
-============================================================
-PROJECT DISTINCT DEVELOPER COUNTS
-============================================================
-PA: 2 -> ['DD', 'DM']
-PB: 1 -> ['DA']
-PC: 2 -> ['DB', 'DC']
-PD: 2 -> ['DC', 'DN']
-PE: 3 -> ['DH', 'DO', 'DP']
-
-============================================================
-PE ACTIVE SHIFTS
-============================================================
-['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
-PE evening shift count: 2
-
-============================================================
-ONBOARDING BREAKDOWN
-============================================================
-PA: ['DD', 'DM']
-PB: ['DA']
-PC: ['DB', 'DC']
-PD: ['DC', 'DN']
-PE: ['DH', 'DO', 'DP']
-(.venv) PS C:\Users\Ahmed\Desktop\Dataannotation\ORTools> python ORToolsTask1.py
-Solver status: OPTIMAL
-Wall time: 242.23s
-
-{"minimum_cost": "6974"}
-
-{"labor_cost": "5344", "shift_operating_cost": "740", "onboarding_cost": "890"}
-
-{
-  "schedule": {
-    "Sunday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Monday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      }
-    },
-    "Tuesday": {
-      "Morning": {
-        "Devs": [
-          "DC",
-          "DN"
-        ],
-        "Projects": [
-          "PD",
-          "PD"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Wednesday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DD",
-          "DH"
-        ],
-        "Projects": [
-          "PB",
-          "PA",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DM",
-          "DO",
-          "DP"
-        ],
-        "Projects": [
-          "PA",
-          "PE",
-          "PE"
-        ]
-      }
-    },
-    "Thursday": {
-      "Morning": {
-        "Devs": [
-          "DB",
-          "DC"
-        ],
-        "Projects": [
-          "PC",
-          "PC"
-        ]
-      }
-    },
-    "Friday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DB",
-          "DO"
-        ],
-        "Projects": [
-          "PB",
-          "PC",
-          "PE"
-        ]
-      }
-    },
-    "Saturday": {
-      "Morning": {
-        "Devs": [
-          "DA",
-          "DH",
-          "DP"
-        ],
-        "Projects": [
-          "PB",
-          "PE",
-          "PE"
-        ]
-      },
-      "Evening": {
-        "Devs": [
-          "DB",
-          "DC",
-          "DM"
-        ],
-        "Projects": [
-          "PC",
-          "PC",
-          "PA"
-        ]
-      }
-    }
-  }
-}
-
-============================================================
-DEVELOPER SUMMARY
-============================================================
-DA: 3 shifts, 24h total, 0h OT, cost=$480, works_five=0
-DB: 3 shifts, 24h total, 0h OT, cost=$528, works_five=0
-DC: 5 shifts, 40h total, 16h OT, cost=$1152, works_five=1
-DD: 1 shifts, 8h total, 0h OT, cost=$200, works_five=0
-DH: 2 shifts, 16h total, 0h OT, cost=$512, works_five=0
-DM: 3 shifts, 24h total, 0h OT, cost=$552, works_five=0
-DN: 3 shifts, 24h total, 0h OT, cost=$576, works_five=0
-DO: 3 shifts, 24h total, 0h OT, cost=$648, works_five=0
-DP: 3 shifts, 24h total, 0h OT, cost=$696, works_five=0
-
-============================================================
-PROJECT DISTINCT DEVELOPER COUNTS
-============================================================
-PA: 2 -> ['DD', 'DM']
-PB: 1 -> ['DA']
-PC: 2 -> ['DB', 'DC']
-PD: 2 -> ['DC', 'DN']
-PE: 3 -> ['DH', 'DO', 'DP']
-
-============================================================
-PE ACTIVE SHIFTS
-============================================================
-['Tuesday Evening', 'Wednesday Morning', 'Wednesday Evening', 'Friday Morning', 'Saturday Morning']
-PE evening shift count: 2
-
-============================================================
-ONBOARDING BREAKDOWN
-============================================================
-PA: ['DD', 'DM']
-PB: ['DA']
-PC: ['DB', 'DC']
-PD: ['DC', 'DN']
-PE: ['DH', 'DO', 'DP']
+Both are feasible, and both have the same optimal cost:
+JSON{"minimum_cost": "6974"}Show more lines
+If you want, I can also help you write this in a short annotation-friendly paragraph for submission.
