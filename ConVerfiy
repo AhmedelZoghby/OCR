@@ -1,0 +1,363 @@
+from typing import Any
+
+
+def Verify(configuration: dict[str, Any]) -> bool:
+    # -----------------------------
+    # Problem data
+    # -----------------------------
+    DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    SHIFTS = ['Morning', 'Evening']
+
+    DEVS = {
+        'DA', 'DB', 'DC', 'DD', 'DE', 'DF', 'DG', 'DH', 'DI', 'DJ',
+        'DK', 'DL', 'DM', 'DN', 'DO', 'DP', 'DQ', 'DR', 'DS', 'DT'
+    }
+
+    PROJECTS = {'PA', 'PB', 'PC', 'PD', 'PE'}
+
+    EFFORT = {
+        'PA': 4,   # 32 hours
+        'PB': 3,   # 24 hours
+        'PC': 5,   # 40 hours
+        'PD': 6,   # 48 hours
+        'PE': 8    # 64 hours
+    }
+
+    ELIGIBILITY = {
+        'DA': {'PA', 'PB'},
+        'DB': {'PB', 'PC'},
+        'DC': {'PC', 'PD'},
+        'DD': {'PA', 'PD'},
+        'DE': {'PA', 'PC'},
+        'DF': {'PB', 'PD'},
+        'DG': {'PA', 'PB', 'PC'},
+        'DH': {'PA', 'PB', 'PC', 'PE'},
+        'DI': {'PE'},
+        'DJ': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DK': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DL': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DM': {'PA', 'PD'},
+        'DN': {'PB', 'PC', 'PD'},
+        'DO': {'PA', 'PC', 'PE'},
+        'DP': {'PB', 'PD', 'PE'},
+        'DQ': {'PA', 'PB', 'PD'},
+        'DR': {'PE', 'PC', 'PD'},
+        'DS': {'PA', 'PB', 'PC', 'PE'},
+        'DT': {'PD', 'PE'}
+    }
+
+    # Optional normalization if someone uses full project names
+    PROJECT_NAME_MAP = {
+        'PA': 'PA',
+        'PB': 'PB',
+        'PC': 'PC',
+        'PD': 'PD',
+        'PE': 'PE',
+        'BNPL Integration': 'PA',
+        'Choicebox': 'PB',
+        'Social Messaging': 'PC',
+        'Loyalty Program': 'PD',
+        'Payment Gateway': 'PE'
+    }
+
+    def norm_project(p: Any) -> str | None:
+        if not isinstance(p, str):
+            return None
+        return PROJECT_NAME_MAP.get(p)
+
+    def slot_index(day_name: str, shift_name: str) -> int:
+        return DAYS.index(day_name) * 2 + SHIFTS.index(shift_name)
+
+    # -----------------------------
+    # Extract schedule
+    # -----------------------------
+    if not isinstance(configuration, dict):
+        return False
+
+    if "schedule" in configuration:
+        schedule = configuration["schedule"]
+    else:
+        schedule = configuration
+
+    if not isinstance(schedule, dict):
+        return False
+
+    # Reject unknown day keys
+    for day_key in schedule.keys():
+        if day_key not in DAYS:
+            return False
+
+    # -----------------------------
+    # Normalize schedule so missing days/shifts become empty
+    # -----------------------------
+    normalized = {}
+    for day in DAYS:
+        normalized[day] = {}
+        raw_day = schedule.get(day, {})
+        if raw_day is None:
+            raw_day = {}
+        if not isinstance(raw_day, dict):
+            return False
+
+        # Reject unknown shift keys
+        for shift_key in raw_day.keys():
+            if shift_key not in SHIFTS:
+                return False
+
+        for shift in SHIFTS:
+            entry = raw_day.get(shift, {"Devs": [], "Projects": []})
+            if entry is None:
+                entry = {"Devs": [], "Projects": []}
+            if not isinstance(entry, dict):
+                return False
+
+            devs = entry.get("Devs", [])
+            projs = entry.get("Projects", [])
+
+            if not isinstance(devs, list) or not isinstance(projs, list):
+                return False
+
+            normalized[day][shift] = {"Devs": devs, "Projects": projs}
+
+    # -----------------------------
+    # Track assignments
+    # -----------------------------
+    project_effort = {p: 0 for p in PROJECTS}
+    dev_shift_count = {d: 0 for d in DEVS}
+    dev_project_used = {d: set() for d in DEVS}
+    project_distinct_devs = {p: set() for p in PROJECTS}
+
+    shift_devs = {}
+    shift_projects = {}
+
+    pe_active_shifts = set()
+    pa_slots = []
+    pc_slots = []
+    pd_slots = []
+
+    # -----------------------------
+    # Basic structural checks
+    # -----------------------------
+    for day in DAYS:
+        for shift in SHIFTS:
+            devs = normalized[day][shift]["Devs"]
+            projs = normalized[day][shift]["Projects"]
+
+            if len(devs) != len(projs):
+                return False
+
+            # At most 3 developers in a shift
+            if len(devs) > 3:
+                return False
+
+            # No duplicate developer in same shift
+            if len(set(devs)) != len(devs):
+                return False
+
+            shift_devs[(day, shift)] = list(devs)
+            shift_projects[(day, shift)] = []
+
+            # Count same-project developers in the shift
+            project_counts_in_shift = {}
+
+            for d, p_raw in zip(devs, projs):
+                if d not in DEVS:
+                    return False
+
+                p = norm_project(p_raw)
+                if p is None or p not in PROJECTS:
+                    return False
+
+                if p not in ELIGIBILITY[d]:
+                    return False
+
+                shift_projects[(day, shift)].append(p)
+
+                project_effort[p] += 1
+                dev_shift_count[d] += 1
+                dev_project_used[d].add(p)
+                project_distinct_devs[p].add(d)
+
+                project_counts_in_shift[p] = project_counts_in_shift.get(p, 0) + 1
+                if project_counts_in_shift[p] > 2:
+                    return False
+
+                if p == 'PE':
+                    pe_active_shifts.add((day, shift))
+                if p == 'PA':
+                    pa_slots.append(slot_index(day, shift))
+                if p == 'PC':
+                    pc_slots.append(slot_index(day, shift))
+                if p == 'PD':
+                    pd_slots.append(slot_index(day, shift))
+
+    # -----------------------------
+    # Exact effort requirements
+    # -----------------------------
+    for p in PROJECTS:
+        if project_effort[p] != EFFORT[p]:
+            return False
+
+    # -----------------------------
+    # One shift per day per developer
+    # -----------------------------
+    for d in DEVS:
+        for day in DAYS:
+            worked_today = 0
+            for shift in SHIFTS:
+                if d in shift_devs[(day, shift)]:
+                    worked_today += 1
+            if worked_today > 1:
+                return False
+
+    # -----------------------------
+    # Weekly shift limits
+    # -----------------------------
+    for d in DEVS:
+        if dev_shift_count[d] > 5:
+            return False
+
+    if dev_shift_count['DO'] > 3:
+        return False
+
+    # Exactly one developer works exactly 5 shifts
+    num_five_shift_devs = sum(1 for d in DEVS if dev_shift_count[d] == 5)
+    if num_five_shift_devs != 1:
+        return False
+
+    # -----------------------------
+    # Rest rule
+    # -----------------------------
+    for d in DEVS:
+        for i in range(6):
+            if d in shift_devs[(DAYS[i], 'Evening')] and d in shift_devs[(DAYS[i + 1], 'Morning')]:
+                return False
+
+    # -----------------------------
+    # Availability / conflict rules
+    # -----------------------------
+    # DA cannot work Evening
+    for day in DAYS:
+        if 'DA' in shift_devs[(day, 'Evening')]:
+            return False
+
+    # DL cannot work Morning
+    for day in DAYS:
+        if 'DL' in shift_devs[(day, 'Morning')]:
+            return False
+
+    # DJ and DK off Sunday
+    for shift in SHIFTS:
+        if 'DJ' in shift_devs[('Sunday', shift)]:
+            return False
+        if 'DK' in shift_devs[('Sunday', shift)]:
+            return False
+
+    # DM off Monday and Friday
+    for shift in SHIFTS:
+        if 'DM' in shift_devs[('Monday', shift)]:
+            return False
+        if 'DM' in shift_devs[('Friday', shift)]:
+            return False
+
+    # DN no Evening
+    for day in DAYS:
+        if 'DN' in shift_devs[(day, 'Evening')]:
+            return False
+
+    # DR off Wednesday and Thursday
+    for shift in SHIFTS:
+        if 'DR' in shift_devs[('Wednesday', shift)]:
+            return False
+        if 'DR' in shift_devs[('Thursday', shift)]:
+            return False
+
+    # DB off Tuesday
+    for shift in SHIFTS:
+        if 'DB' in shift_devs[('Tuesday', shift)]:
+            return False
+
+    # DN cannot work with DB
+    for day in DAYS:
+        for shift in SHIFTS:
+            devs_here = set(shift_devs[(day, shift)])
+            if 'DN' in devs_here and 'DB' in devs_here:
+                return False
+
+    # DR cannot work with DC
+    for day in DAYS:
+        for shift in SHIFTS:
+            devs_here = set(shift_devs[(day, shift)])
+            if 'DR' in devs_here and 'DC' in devs_here:
+                return False
+
+    # DC and DD cannot work together
+    for day in DAYS:
+        for shift in SHIFTS:
+            devs_here = set(shift_devs[(day, shift)])
+            if 'DC' in devs_here and 'DD' in devs_here:
+                return False
+
+    # If DS uses PE anywhere, then DS cannot use PB anywhere
+    if 'PE' in dev_project_used['DS'] and 'PB' in dev_project_used['DS']:
+        return False
+
+    # If DI works on PE in a shift, DL or DJ or DK must also work in that shift
+    for day in DAYS:
+        for shift in SHIFTS:
+            devs = normalized[day][shift]["Devs"]
+            projs = [norm_project(p) for p in normalized[day][shift]["Projects"]]
+
+            for d, p in zip(devs, projs):
+                if d == 'DI' and p == 'PE':
+                    devs_here = set(devs)
+                    if not ({'DL', 'DJ', 'DK'} & devs_here):
+                        return False
+
+    # -----------------------------
+    # Distinct developer caps
+    # -----------------------------
+    for p in ['PA', 'PB', 'PC', 'PD']:
+        if len(project_distinct_devs[p]) > 2:
+            return False
+
+    if len(project_distinct_devs['PE']) > 3:
+        return False
+
+    # -----------------------------
+    # PB implies PE in same shift
+    # -----------------------------
+    for day in DAYS:
+        for shift in SHIFTS:
+            projs = shift_projects[(day, shift)]
+            if 'PB' in projs and 'PE' not in projs:
+                return False
+
+    # -----------------------------
+    # Project E exact shift pattern
+    # -----------------------------
+    if len(pe_active_shifts) != 5:
+        return False
+
+    pe_evenings = sum(1 for day, shift in pe_active_shifts if shift == 'Evening')
+    if pe_evenings < 2:
+        return False
+
+    # -----------------------------
+    # Dependencies
+    # -----------------------------
+    # PD must be fully completed before PA starts
+    if pa_slots:
+        first_pa = min(pa_slots)
+        pd_before = sum(1 for t in pd_slots if t < first_pa)
+        if pd_before < EFFORT['PD']:
+            return False
+
+    # Need at least 3 PA developer-shifts before PC starts
+    if pc_slots:
+        first_pc = min(pc_slots)
+        pa_before = sum(1 for t in pa_slots if t < first_pc)
+        if pa_before < 3:
+            return False
+
+    return True
