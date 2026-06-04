@@ -1,264 +1,225 @@
-Understood. Here is a more natural, human-written version of the golden response, without emojis and without sounding overly polished or mechanical.
-
-***
-
 ## Setting up the schedule
 
 The five projects require a total of:
 
-* Project A: $$32$$ hours $$= 4$$ developer-shifts
-* Project B: $$24$$ hours $$= 3$$ developer-shifts
-* Project C: $$40$$ hours $$= 5$$ developer-shifts
-* Project D: $$48$$ hours $$= 6$$ developer-shifts
-* Project E: $$64$$ hours $$= 8$$ developer-shifts
+- Project A: $32$ hours $= 4$ developer-shifts
+- Project B: $24$ hours $= 3$ developer-shifts
+- Project C: $40$ hours $= 5$ developer-shifts
+- Project D: $48$ hours $= 6$ developer-shifts
+- Project E: $64$ hours $= 8$ developer-shifts
 
 So overall, the week needs:
 
-$$
-4 + 3 + 5 + 6 + 8 = 26
-$$
+$4 + 3 + 5 + 6 + 8 = 26$
 
 developer-shifts.
 
-The main structure of the solution is determined by three facts:
+The structure of the solution is mainly driven by three constraints:
 
-1. Project D has to be completed before Project A starts.
-2. At least $$24$$ hours of Project A, which is $$3$$ developer-shifts, must be done before Project C starts.
-3. Project E must be spread across exactly $$5$$ shifts, with at least $$2$$ of those in the evening.
+1. Project D must be fully completed before Project A starts.
+2. At least $24$ hours of Project A, which means $3$ developer-shifts, must be completed before Project C starts.
+3. Project E must be assigned in exactly $5$ distinct shifts, with at least $2$ of those in the Evening.
 
-Because evening shifts are much more expensive than morning shifts, the solution should keep the number of evening shifts as low as possible while still meeting all of the project and staffing rules.
-
-***
+Because Evening shifts cost much more than Morning shifts, the schedule should use as few Evening shifts as possible while still satisfying the Project E pattern and all developer constraints.
 
 ## Building the project assignments
 
 ### Project D
 
-Project D needs $$6$$ developer-shifts, and it has to be finished first. The cheapest sensible pair for D is:
+Project D requires $6$ developer-shifts and has to be completed first. The cheapest practical pair for Project D is:
 
-* DC at $$\$24$$/hr
-* DN at $$\$24$$/hr
+- DC at $\$24$/hr
+- DN at $\$24$/hr
 
-Using both of them for three morning shifts gives exactly:
+If both work three Morning shifts, that gives:
 
-$$
-2 + 2 + 2 = 6
-$$
+$2 + 2 + 2 = 6$
 
-developer-shifts.
+developer-shifts exactly.
 
-So Project D is completed as follows:
+So Project D is scheduled as:
 
-* Sunday Morning: DC, DN on PD
-* Monday Morning: DC, DN on PD
-* Tuesday Morning: DC, DN on PD
+- Sunday Morning: DC, DN on PD
+- Monday Morning: DC, DN on PD
+- Tuesday Morning: DC, DN on PD
 
-That completes all of Project D before any work begins on Project A.
-
-***
+This fully completes Project D before any work starts on Project A.
 
 ### Project A
 
-Project A needs $$4$$ developer-shifts. Since Project D finishes on Tuesday Morning, the earliest Project A can start is Tuesday Evening.
+Project A requires $4$ developer-shifts. Since Project D finishes on Tuesday Morning, the first available time for Project A is Tuesday Evening.
 
-A low-cost way to cover A is to use:
+A low-cost way to cover Project A is:
 
-* DM at $$\$23$$/hr
-* DD at $$\$25$$/hr
+- DM at $\$23$/hr
+- DD at $\$25$/hr
 
-These two developers are eligible for Project A, and using only them also keeps Project A within its cap of at most $$2$$ distinct developers.
+Both are eligible for Project A, and using only these two developers also keeps Project A within its cap of at most $2$ distinct developers.
 
-The four Project A shifts are:
+The four Project A assignments are:
 
-* Tuesday Evening: DM on PA
-* Wednesday Morning: DD on PA
-* Wednesday Evening: DM on PA
-* Saturday Evening: DM on PA
+- Tuesday Evening: DM on PA
+- Wednesday Morning: DD on PA
+- Wednesday Evening: DM on PA
+- Saturday Evening: DM on PA
 
-So Project A gets exactly:
+So Project A receives:
 
-$$
-1 + 1 + 1 + 1 = 4
-$$
+$1 + 1 + 1 + 1 = 4$
 
 developer-shifts.
-
-***
 
 ### Project C
 
-Project C needs $$5$$ developer-shifts, but it cannot start until $$3$$ Project A shifts are already complete.
+Project C requires $5$ developer-shifts, but it cannot start until at least $3$ developer-shifts of Project A are already completed.
 
 Before Thursday Morning, Project A already has:
 
-* Tuesday Evening: DM on PA
-* Wednesday Morning: DD on PA
-* Wednesday Evening: DM on PA
+- Tuesday Evening: DM on PA
+- Wednesday Morning: DD on PA
+- Wednesday Evening: DM on PA
 
-So by then, the required $$3$$ developer-shifts of A are complete, and Project C can start.
+So by then, exactly $3$ developer-shifts of Project A are complete, and Project C can begin.
 
 The cheapest good pair for Project C is:
 
-* DB at $$\$22$$/hr
-* DC at $$\$24$$/hr
+- DB at $\$22$/hr
+- DC at $\$24$/hr
 
-These two cover C as follows:
+These two cover Project C as follows:
 
-* Thursday Morning: DB, DC on PC
-* Friday Morning: DB on PC
-* Saturday Evening: DB, DC on PC
+- Thursday Morning: DB, DC on PC
+- Friday Morning: DB on PC
+- Saturday Evening: DB, DC on PC
 
 That gives:
 
-$$
-2 + 1 + 2 = 5
-$$
+$2 + 1 + 2 = 5$
 
 developer-shifts for Project C.
 
-***
-
 ### Project B
 
-Project B needs $$3$$ developer-shifts, and every shift containing B must also contain E.
+Project B requires $3$ developer-shifts, and every shift containing Project B must also contain Project E.
 
-The cheapest way to do this is to assign all B work to DA, who costs only $$\$20$$/hr and is eligible for Project B. Since DA cannot work evening shifts, all B assignments naturally go into morning shifts.
+The cheapest way to cover Project B is to use DA, who costs only $\$20$/hr and is eligible for Project B. Since DA cannot work Evening shifts, all Project B assignments naturally go into Morning shifts.
 
-So Project B is:
+So Project B is assigned as:
 
-* Wednesday Morning: DA on PB
-* Friday Morning: DA on PB
-* Saturday Morning: DA on PB
+- Wednesday Morning: DA on PB
+- Friday Morning: DA on PB
+- Saturday Morning: DA on PB
 
-This gives exactly:
+That gives exactly:
 
-$$
-1 + 1 + 1 = 3
-$$
+$1 + 1 + 1 = 3$
 
 developer-shifts.
-
-***
 
 ### Project E
 
-Project E needs $$8$$ developer-shifts, but it must appear in exactly $$5$$ shifts, and at least $$2$$ of those must be evening shifts.
+Project E requires $8$ developer-shifts, but it must appear in exactly $5$ distinct shifts, and at least $2$ of those shifts must be in the Evening.
 
-A cost-efficient team for E is:
+A cost-efficient team for Project E is:
 
-* DO at $$\$27$$/hr
-* DP at $$\$29$$/hr
-* DH at $$\$32$$/hr
+- DO at $\$27$/hr
+- DP at $\$29$/hr
+- DH at $\$32$/hr
 
-This keeps Project E at exactly $$3$$ distinct developers, which is the maximum allowed.
+This keeps Project E at exactly $3$ distinct developers, which matches the allowed maximum.
 
-A clean way to distribute the $$8$$ required developer-shifts over $$5$$ active shifts is:
+A clean distribution of the $8$ required developer-shifts over $5$ active shifts is:
 
-* Tuesday Evening: DO, DP on PE
-* Wednesday Morning: DH on PE
-* Wednesday Evening: DO, DP on PE
-* Friday Morning: DH on PE
-* Saturday Morning: DO, DP on PE
+- Tuesday Evening: DO, DP on PE
+- Wednesday Morning: DH on PE
+- Wednesday Evening: DO, DP on PE
+- Friday Morning: DH on PE
+- Saturday Morning: DO, DP on PE
 
-That gives:
+So the total is:
 
-$$
-2 + 1 + 2 + 1 + 2 = 8
-$$
+$2 + 1 + 2 + 1 + 2 = 8$
 
 developer-shifts.
 
-The active Project E shifts are:
+The active Project E shifts are therefore:
 
-* Tuesday Evening
-* Wednesday Morning
-* Wednesday Evening
-* Friday Morning
-* Saturday Morning
+- Tuesday Evening
+- Wednesday Morning
+- Wednesday Evening
+- Friday Morning
+- Saturday Morning
 
-So Project E appears in exactly $$5$$ shifts, and exactly $$2$$ of them are evening shifts:
+So Project E appears in exactly $5$ shifts, and exactly $2$ of them are Evening shifts:
 
-* Tuesday Evening
-* Wednesday Evening
+- Tuesday Evening
+- Wednesday Evening
 
-That satisfies the pattern requirement exactly.
-
-***
+That satisfies the Project E shift-pattern requirement exactly.
 
 ## Final schedule
 
 ### Sunday
-
-* Morning: DC → PD, DN → PD
-* Evening: empty
+- Morning: DC $\rightarrow$ PD, DN $\rightarrow$ PD
+- Evening: empty
 
 ### Monday
-
-* Morning: DC → PD, DN → PD
-* Evening: empty
+- Morning: DC $\rightarrow$ PD, DN $\rightarrow$ PD
+- Evening: empty
 
 ### Tuesday
-
-* Morning: DC → PD, DN → PD
-* Evening: DM → PA, DO → PE, DP → PE
+- Morning: DC $\rightarrow$ PD, DN $\rightarrow$ PD
+- Evening: DM $\rightarrow$ PA, DO $\rightarrow$ PE, DP $\rightarrow$ PE
 
 ### Wednesday
-
-* Morning: DA → PB, DD → PA, DH → PE
-* Evening: DM → PA, DO → PE, DP → PE
+- Morning: DA $\rightarrow$ PB, DD $\rightarrow$ PA, DH $\rightarrow$ PE
+- Evening: DM $\rightarrow$ PA, DO $\rightarrow$ PE, DP $\rightarrow$ PE
 
 ### Thursday
-
-* Morning: DB → PC, DC → PC
-* Evening: empty
+- Morning: DB $\rightarrow$ PC, DC $\rightarrow$ PC
+- Evening: empty
 
 ### Friday
-
-* Morning: DA → PB, DB → PC, DH → PE
-* Evening: empty
+- Morning: DA $\rightarrow$ PB, DB $\rightarrow$ PC, DH $\rightarrow$ PE
+- Evening: empty
 
 ### Saturday
-
-* Morning: DA → PB, DO → PE, DP → PE
-* Evening: DB → PC, DC → PC, DM → PA
-
-***
+- Morning: DA $\rightarrow$ PB, DO $\rightarrow$ PE, DP $\rightarrow$ PE
+- Evening: DB $\rightarrow$ PC, DC $\rightarrow$ PC, DM $\rightarrow$ PA
 
 ## Checking the important constraints
 
-Project D is fully completed by Tuesday Morning, and Project A starts Tuesday Evening, so the D-before-A requirement is satisfied.
+Project D is fully completed by Tuesday Morning, and Project A starts on Tuesday Evening, so the D-before-A dependency is satisfied.
 
 Before Project C starts on Thursday Morning, Project A already has three completed developer-shifts:
 
-* Tuesday Evening
-* Wednesday Morning
-* Wednesday Evening
+- Tuesday Evening
+- Wednesday Morning
+- Wednesday Evening
 
-So the A-before-C requirement is also satisfied.
+So the A-before-C dependency is also satisfied.
 
 Project B appears in:
 
-* Wednesday Morning
-* Friday Morning
-* Saturday Morning
+- Wednesday Morning
+- Friday Morning
+- Saturday Morning
 
-Each of those shifts also contains Project E, so the B-with-E condition is met.
+Each of those shifts also includes Project E, so the B-with-E condition is satisfied.
 
-Project E is active in exactly $$5$$ shifts, with exactly $$2$$ evening shifts, so that requirement is also satisfied.
+Project E is active in exactly $5$ shifts, and exactly $2$ of those are Evening shifts, so that requirement is met exactly.
 
-The week-wide distinct developer caps are met:
+The distinct developer caps are also satisfied:
 
-* Project A uses DD and DM
-* Project B uses DA
-* Project C uses DB and DC
-* Project D uses DC and DN
-* Project E uses DH, DO, and DP
+- Project A uses DD and DM
+- Project B uses DA
+- Project C uses DB and DC
+- Project D uses DC and DN
+- Project E uses DH, DO, and DP
 
-Exactly one developer works $$5$$ shifts: DC. Everyone else works fewer.
+Exactly one developer works $5$ shifts, which is DC. Everyone else works fewer than $5$.
 
-No developer works more than one shift in a day, and no one works an evening shift followed by the next morning.
-
-***
+No developer works more than one shift in a day, and no one works an Evening shift followed by the next Morning.
 
 ## Cost calculation
 
@@ -266,120 +227,92 @@ No developer works more than one shift in a day, and no one works an evening shi
 
 The weekly shift counts are:
 
-* DA: $$3$$ shifts
-* DB: $$3$$ shifts
-* DC: $$5$$ shifts
-* DD: $$1$$ shift
-* DH: $$2$$ shifts
-* DM: $$3$$ shifts
-* DN: $$3$$ shifts
-* DO: $$3$$ shifts
-* DP: $$3$$ shifts
+- DA: $3$ shifts
+- DB: $3$ shifts
+- DC: $5$ shifts
+- DD: $1$ shift
+- DH: $2$ shifts
+- DM: $3$ shifts
+- DN: $3$ shifts
+- DO: $3$ shifts
+- DP: $3$ shifts
 
 Their labor costs are:
 
-* DA: $$24 \times 20 = 480$$
-* DB: $$24 \times 22 = 528$$
-* DC: regular pay $$24 \times 24 = 576$$, overtime pay $$16 \times 36 = 576$$, total $$1152$$
-* DD: $$8 \times 25 = 200$$
-* DH: $$16 \times 32 = 512$$
-* DM: $$24 \times 23 = 552$$
-* DN: $$24 \times 24 = 576$$
-* DO: $$24 \times 27 = 648$$
-* DP: $$24 \times 29 = 696$$
+- DA: $24 \times 20 = 480$
+- DB: $24 \times 22 = 528$
+- DC: regular pay $24 \times 24 = 576$, overtime pay $16 \times 36 = 576$, total $1152$
+- DD: $8 \times 25 = 200$
+- DH: $16 \times 32 = 512$
+- DM: $24 \times 23 = 552$
+- DN: $24 \times 24 = 576$
+- DO: $24 \times 27 = 648$
+- DP: $24 \times 29 = 696$
 
 So total labor cost is:
 
-$$
-480 + 528 + 1152 + 200 + 512 + 552 + 576 + 648 + 696 = 5344
-$$
-
-***
+$480 + 528 + 1152 + 200 + 512 + 552 + 576 + 648 + 696 = 5344$
 
 ### Shift operating cost
 
-Used morning shifts:
+Used Morning shifts are:
 
-* Sunday
-* Monday
-* Tuesday
-* Wednesday
-* Thursday
-* Friday
-* Saturday
+- Sunday
+- Monday
+- Tuesday
+- Wednesday
+- Thursday
+- Friday
+- Saturday
 
-That is $$7$$ morning shifts:
+That is $7$ Morning shifts:
 
-$$
-7 \times 20 = 140
-$$
+$7 \times 20 = 140$
 
-Used evening shifts:
+Used Evening shifts are:
 
-* Tuesday
-* Wednesday
-* Saturday
+- Tuesday
+- Wednesday
+- Saturday
 
-That is $$3$$ evening shifts:
+That is $3$ Evening shifts:
 
-$$
-3 \times 200 = 600
-$$
+$3 \times 200 = 600$
 
-So total shift cost is:
+So total shift operating cost is:
 
-$$
-140 + 600 = 740
-$$
-
-***
+$140 + 600 = 740$
 
 ### Onboarding cost
 
-The distinct developer-project assignments are:
+The distinct developer-project pairs are:
 
-* Project A: DD, DM
-  $$
-  2 \times 90 = 180
-  $$
+- Project A: DD, DM  
+  $2 \times 90 = 180$
 
-* Project B: DA
-  $$
-  1 \times 70 = 70
-  $$
+- Project B: DA  
+  $1 \times 70 = 70$
 
-* Project C: DB, DC
-  $$
-  2 \times 80 = 160
-  $$
+- Project C: DB, DC  
+  $2 \times 80 = 160$
 
-* Project D: DC, DN
-  $$
-  2 \times 60 = 120
-  $$
+- Project D: DC, DN  
+  $2 \times 60 = 120$
 
-* Project E: DH, DO, DP
-  $$
-  3 \times 120 = 360
-  $$
+- Project E: DH, DO, DP  
+  $3 \times 120 = 360$
 
 So total onboarding cost is:
 
-$$
-180 + 70 + 160 + 120 + 360 = 890
-$$
-
-***
+$180 + 70 + 160 + 120 + 360 = 890$
 
 ## Optimal total cost
 
-Now combine the three parts:
+Now combine the three cost components:
 
-$$
-5344 + 740 + 890 = 6974
-$$
+$5344 + 740 + 890 = 6974$
 
-So the optimal total weekly cost is **6974**.
+So the optimal total weekly cost is $6974$.
 
 ```json
 {
@@ -456,19 +389,4 @@ So the optimal total weekly cost is **6974**.
       }
     }
   }
-
-
-
-------------
-
-
-Sure — here’s a more natural version in your style:
-
-My code is better because it models the problem more accurately and actually reaches the true optimal solution. The main difference is that I encoded the important constraints directly in the decision variables themselves, instead of relying on loose logic or approximate reasoning. This includes the project dependencies, the rule that Project B must be paired with Project E in the same shift, the exact 5-shift pattern for Project E, the weekly distinct developer caps, and the onboarding waiver for DT if DT and DI work together on Project E. I also modeled all parts of the cost function properly — labor cost, shift operating cost, and onboarding cost — using helper variables like `used_shift`, `uses_project`, and `pe_active`, so the solver is optimizing the exact objective we care about.
-
-The model responses were weaker because they either stopped at a feasible solution without proving optimality, encoded some constraints incorrectly, or reasoned through the schedule informally instead of solving the exact optimization problem. My code, on the other hand, is solver-driven end to end and produced a schedule with a proven optimal value of `6974`. That is why I trust my solution more — it is not just a good schedule, it is the best valid schedule for the problem as written.
-
-If you want, I can also make it sound even more casual / personal, like something you would actually type in the submission box yourself.
-
 }
-```
