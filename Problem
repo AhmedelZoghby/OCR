@@ -1,102 +1,85 @@
-I am working as a scrum master in eXtra(united electronics). I am tasked with setting up the developers' shifts for the next week to make sure we finish our scope. For the next week's release we have 5 projects. We have a team of developers of 20. Each has a different pay per hour and each is tasked to specfic projects. There is some contraints however such as Days off or conflicts between team members. Each Day we have 2 shifts Morning Shift and evening shift each is 8 hours. Each Shift up to 3 developers can work. A Devloper can work only 1 Shift per day. It must be noted that while developer pay is the same in the morning or evening shifts. Evening shifts require more electricity in the building around 10 times more the cost of operating a morning shift is 20 USD while an evening shift 200 USD. A shift is considered to operate if at least one developer works. Our goal is to find the optimal schedule that completes all the work required within a week at the absolute minimum cost
-where cost equal = ( baseHours x Rate  + OvertimeHours x 1.5Rate  ) for each developer + 20 x number of  morning shifts + 200 x number of evening shifts 
-+ Total Onboarding Costs
+I am working as a scrum master at eXtra (United Electronics). I need to create the developer shift schedule for the next week’s release so that all required project work is completed at the minimum total weekly cost.
+We have 20 developers and 5 projects. Each developer has a different hourly rate, is eligible for only certain projects, and has additional availability and compatibility constraints.
+The planning horizon is one week consisting of the following days: Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, and Saturday.
+Each day has two shifts: Morning and Evening. Each shift lasts 8 hours.
+A shift may have at most 3 developers assigned. A developer may work at most 1 shift per day. A shift is considered used if at least one developer is assigned.
 
+Objective:
+Minimize the total weekly cost, defined as:
+Total cost = sum over all developers of (regularHours × hourlyRate + overtimeHours × 1.5 × hourlyRate) + 20 × number of used Morning shifts + 200 × number of used Evening shifts + total onboarding cost.
+For each developer:
 
+regularHours = min(total assigned hours, 24)
+overtimeHours = max(total assigned hours − 24, 0)
 
-Here are the 5 Projects we are working on: 
-Project - Name - Effort - Dependency
+Any hours beyond 24 per week are paid at 1.5 times the base hourly rate.
 
-Project A: BNPL Integration: 32 Hours : Project D must be completed fully first
-Project B: Choicebox: 24 Hours : Must be worked on Simultaneously with Project E
-Project C: Social Messaging: 40 Hours: Project A must have 24 hours completed first
-Project D: Loyalty Program: 48 Hours: None
-Project E: Payment Gateway: 64 hours: None
+Projects:
+Project A (BNPL Integration) requires 32 hours. Project D must be completed fully before Project A can start.
+Project B (Choicebox) requires 24 hours. Whenever Project B is assigned in any shift, that same shift must include at least one developer assigned to Project E.
+Project C (Social Messaging) requires 40 hours. At least 24 hours of Project A must be completed before Project C can start.
+Project D (Loyalty Program) requires 48 hours. It has no dependencies.
+Project E (Payment Gateway) requires 64 hours. It has no dependencies.
+Because each shift is 8 hours, the total required developer-shifts are:
+Project A = 4 shifts, Project B = 3 shifts, Project C = 5 shifts, Project D = 6 shifts, Project E = 8 shifts.
 
-Developers Hourly Rates:
-
-Dev A: $20/hr | Eligible for: Project A, Project B
-
-Dev B: $22/hr | Eligible for: Project B, Project C
-
-Dev C: $24/hr | Eligible for: Project C, Project D
-
-Dev D: $25/hr | Eligible for: Project A, Project D
-
-Dev E: $26/hr | Eligible for: Project A, Project C
-
-Dev F: $28/hr | Eligible for: Project B, Project D
-
-Dev G: $30/hr | Eligible for: Project A, Project B , Project C,
-
-Dev H: $32/hr | Eligible for: Project A, Project B , Project C, Project E
-
-Dev I: $40/hr | Eligible for: Project E
-
-Dev J: $60/hr | Eligible for: All Projects (A, B, C, D , E)
-
-Dev K: $85/hr | Eligible for: All Projects (A, B, C, D, E)
-
-Dev L: $85/hr | Eligible for: All Projects (A, B, C, D , E)
-
-Dev M: $23/hr | Eligible for: Project A, Project D
-
-Dev N: $24/hr | Eligible for: Project B, Project C , Project D
-
-Dev O: $27/hr | Eligible for: Project A, Project C, Project E
-
-Dev P: $29/hr | Eligible for: Project B, Project D , Project E
-
-Dev Q: $31/hr | Eligible for: Project A, Project B , Project D
-
-Dev R $33/hr | Eligible for: Project E , Project C , Project D
-
-Dev S: $36/hr | Eligible for: Project A, Project B , Project C, Project E
-
-Dev T: $38/hr | Eligible for: Project D , Project E
+Developers:
+DA earns 20 per hour and can work on Projects A and B.
+DB earns 22 per hour and can work on Projects B and C.
+DC earns 24 per hour and can work on Projects C and D.
+DD earns 25 per hour and can work on Projects A and D.
+DE earns 26 per hour and can work on Projects A and C.
+DF earns 28 per hour and can work on Projects B and D.
+DG earns 30 per hour and can work on Projects A, B, and C.
+DH earns 32 per hour and can work on Projects A, B, C, and E.
+DI earns 40 per hour and can work only on Project E.
+DJ earns 60 per hour and can work on all projects.
+DK earns 85 per hour and can work on all projects.
+DL earns 85 per hour and can work on all projects.
+DM earns 23 per hour and can work on Projects A and D.
+DN earns 24 per hour and can work on Projects B, C, and D.
+DO earns 27 per hour and can work on Projects A, C, and E.
+DP earns 29 per hour and can work on Projects B, D, and E.
+DQ earns 31 per hour and can work on Projects A, B, and D.
+DR earns 33 per hour and can work on Projects E, C, and D.
+DS earns 36 per hour and can work on Projects A, B, C, and E.
+DT earns 38 per hour and can work on Projects D and E.
 
 Constraints:
+Project E must be worked in exactly 5 distinct shifts, and at least 2 of those shifts must be Evening shifts.
+Project D must be fully completed before Project A starts.
+At least 24 hours of Project A must be completed before Project C starts.
+If Project B is assigned in a shift, that same shift must include at least one developer working on Project E.
+At most 3 developers can work in any shift.
+Each developer can work at most 1 shift per day.
+Each developer can work at most 5 shifts in the week.
+Exactly one developer must work exactly 5 shifts during the week.
+If a developer works an Evening shift on a given day, they cannot work the Morning shift on the following day.
+In any shift, at most 2 developers can be assigned to the same project.
+DA cannot work Evening shifts.
+DL cannot work Morning shifts.
+DJ and DK cannot work on Sunday.
+DM is off on Monday and Friday.
+DN cannot work Evening shifts and cannot work in the same shift as DB.
+DO can work at most 3 shifts in the week.
+DR is off on Wednesday and Thursday and cannot work in the same shift as DC.
+If DS is assigned to Project E at any time during the week, then DS cannot be assigned to Project B anywhere in the week.
+DC and DD cannot work in the same shift.
+DB is off on Tuesday.
+If DI works on Project E in a shift, at least one of DL, DJ, or DK must also work in that same shift.
+Across the entire week, the number of distinct developers assigned to each project is limited as follows:
+Projects A, B, C, and D may each use at most 2 distinct developers.
+Project E may use at most 3 distinct developers.
 
-Project E must be worked in exactly 5 Shifts with at least 2 evening shifts
-Dev A doesn't work on night shifts
-Dev L doesn't work on Day Shifts
-Dev J and K dont work on Sunday
-Dev M Off Monday and Friday
-Dev N no Evenings  doesn't work with Dev B
-Dev O max 3 shifts per week
-Dev R Off wednesday and Thurday doesn't work with Dev C
-Dev S If works on project E can not work on Project B
-Dev T onboarding cost if her works in the same shift with Dev I
-Dev C and D can't work together due to conflict
-Dev B is off on Tuesday
-If a developer works more than 24 Hours per week he is paid an overtime fee at 1.5x his base rate
-A developer can work a max of 5 shifts per week
-All projects may be assigned to at most 2 distinct developers across the week. The only exception is Project E can be assigned to 3 distincit developers
+Onboarding costs:
+If a developer is assigned to a project at least once during the week, a one-time onboarding cost is incurred for that developer-project pair, regardless of how many shifts they later work on that project.
+The costs are:
+Project A costs 90 per developer, Project B costs 70, Project C costs 80, Project D costs 60, and Project E costs 120.
+Exception:
+If DT and DI are both assigned to Project E in the same shift at least once during the week, then the onboarding cost for the pair (DT, Project E) is waived.
 
-If Dev I work on Project E he must be accompanied in the same shift with either Dev L, J or K
-
-If a developer works an evening shift they can't work a morning shift the next day
-
-In any shift at most 2 developers can work on the same project
-
-Exactly one developer should work 5 shifts
-
-Everytime a new developer is assigned to a project there is an onboarding cost
-
-PA: 90
-PB: 70
-PC: 80
-PD: 60 
-PE: 120
-
-
-
-
-The output must be minimum cost in JSON format e.g. { "minimum_cost": "3206" }).
-and must also include the schedule eg: 
-"schedule": {
-    "Sunday": {
-      "Morning": {"Devs": ["DA", "DB"], "Projects": ["PC", "PD"]},
-      "Evening": {"Devs": ["DC", "DD"], "Projects": ["PA", "PB"]}
-
+Output format:
+Return the final answer as a valid JSON object with two keys: "minimum_cost" and "schedule".
+The value of "minimum_cost" must be a string representing the optimal total cost.
+The value of "schedule" must map each day to its shifts. Each shift must include two lists: "Devs" and "Projects". These lists must have the same length, and each developer in the Devs list works on the corresponding project in the Projects list by position.
 
