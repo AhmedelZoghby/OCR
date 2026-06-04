@@ -1,513 +1,453 @@
 import json
 from ortools.sat.python import cp_model
 
-# ============================================================
-# DATA
-# ============================================================
-devs = [
-    'DA', 'DB', 'DC', 'DD', 'DE', 'DF', 'DG', 'DH', 'DI', 'DJ',
-    'DK', 'DL', 'DM', 'DN', 'DO', 'DP', 'DQ', 'DR', 'DS', 'DT'
-]
-
-rates = {
-    'DA': 20, 'DB': 22, 'DC': 24, 'DD': 25, 'DE': 26,
-    'DF': 28, 'DG': 30, 'DH': 32, 'DI': 40, 'DJ': 60,
-    'DK': 85, 'DL': 85, 'DM': 23, 'DN': 24, 'DO': 27,
-    'DP': 29, 'DQ': 31, 'DR': 33, 'DS': 36, 'DT': 38
-}
-
-projects = ['PA', 'PB', 'PC', 'PD', 'PE']
-
-# effort in developer-shifts (1 dev-shift = 8 hours)
-effort = {
-    'PA': 4,   # 32 hours
-    'PB': 3,   # 24 hours
-    'PC': 5,   # 40 hours
-    'PD': 6,   # 48 hours
-    'PE': 8    # 64 hours
-}
-
-eligibility = {
-    'DA': {'PA', 'PB'},
-    'DB': {'PB', 'PC'},
-    'DC': {'PC', 'PD'},
-    'DD': {'PA', 'PD'},
-    'DE': {'PA', 'PC'},
-    'DF': {'PB', 'PD'},
-    'DG': {'PA', 'PB', 'PC'},
-    'DH': {'PA', 'PB', 'PC', 'PE'},
-    'DI': {'PE'},
-    'DJ': {'PA', 'PB', 'PC', 'PD', 'PE'},
-    'DK': {'PA', 'PB', 'PC', 'PD', 'PE'},
-    'DL': {'PA', 'PB', 'PC', 'PD', 'PE'},
-    'DM': {'PA', 'PD'},
-    'DN': {'PB', 'PC', 'PD'},
-    'DO': {'PA', 'PC', 'PE'},
-    'DP': {'PB', 'PD', 'PE'},
-    'DQ': {'PA', 'PB', 'PD'},
-    'DR': {'PE', 'PC', 'PD'},
-    'DS': {'PA', 'PB', 'PC', 'PE'},
-    'DT': {'PD', 'PE'}
-}
-
-onboarding_costs = {
-    'PA': 90,
-    'PB': 70,
-    'PC': 80,
-    'PD': 60,
-    'PE': 120
-}
-
-days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-shifts = ['Morning', 'Evening']
 
 def slot(day_idx, shift_idx):
-    return day_idx * 2 + shift_idx  # 0..13
+    return day_idx * 2 + shift_idx
 
-# ============================================================
-# MODEL
-# ============================================================
-model = cp_model.CpModel()
 
-# assign[(d, di, si, p)] = 1 iff developer d works project p on day di shift si
-assign = {}
-for d in devs:
-    for di in range(7):
-        for si in range(2):
+def main():
+    # -----------------------------
+    # Data
+    # -----------------------------
+    developers = [
+        'DA', 'DB', 'DC', 'DD', 'DE', 'DF', 'DG', 'DH', 'DI', 'DJ',
+        'DK', 'DL', 'DM', 'DN', 'DO', 'DP', 'DQ', 'DR', 'DS', 'DT'
+    ]
+
+    rates = {
+        'DA': 20, 'DB': 22, 'DC': 24, 'DD': 25, 'DE': 26,
+        'DF': 28, 'DG': 30, 'DH': 32, 'DI': 40, 'DJ': 60,
+        'DK': 85, 'DL': 85, 'DM': 23, 'DN': 24, 'DO': 27,
+        'DP': 29, 'DQ': 31, 'DR': 33, 'DS': 36, 'DT': 38
+    }
+
+    projects = ['PA', 'PB', 'PC', 'PD', 'PE']
+
+    # effort in developer-shifts (1 shift = 8 hours)
+    effort = {
+        'PA': 4,
+        'PB': 3,
+        'PC': 5,
+        'PD': 6,
+        'PE': 8
+    }
+
+    eligibility = {
+        'DA': {'PA', 'PB'},
+        'DB': {'PB', 'PC'},
+        'DC': {'PC', 'PD'},
+        'DD': {'PA', 'PD'},
+        'DE': {'PA', 'PC'},
+        'DF': {'PB', 'PD'},
+        'DG': {'PA', 'PB', 'PC'},
+        'DH': {'PA', 'PB', 'PC', 'PE'},
+        'DI': {'PE'},
+        'DJ': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DK': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DL': {'PA', 'PB', 'PC', 'PD', 'PE'},
+        'DM': {'PA', 'PD'},
+        'DN': {'PB', 'PC', 'PD'},
+        'DO': {'PA', 'PC', 'PE'},
+        'DP': {'PB', 'PD', 'PE'},
+        'DQ': {'PA', 'PB', 'PD'},
+        'DR': {'PE', 'PC', 'PD'},
+        'DS': {'PA', 'PB', 'PC', 'PE'},
+        'DT': {'PD', 'PE'}
+    }
+
+    onboarding_costs = {
+        'PA': 90,
+        'PB': 70,
+        'PC': 80,
+        'PD': 60,
+        'PE': 120
+    }
+
+    days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    shift_names = ['Morning', 'Evening']
+
+    # -----------------------------
+    # Model
+    # -----------------------------
+    model = cp_model.CpModel()
+
+    # assign[(dev, day, shift, project)] = 1 if dev works that project in that shift
+    assign = {}
+    for d in developers:
+        for day in range(7):
+            for shift in range(2):
+                for p in projects:
+                    if p in eligibility[d]:
+                        assign[(d, day, shift, p)] = model.NewBoolVar(f'assign_{d}_{day}_{shift}_{p}')
+
+    # work[(dev, day, shift)] = 1 if dev works anything in that shift
+    work = {}
+    for d in developers:
+        for day in range(7):
+            for shift in range(2):
+                work[(d, day, shift)] = model.NewBoolVar(f'work_{d}_{day}_{shift}')
+                possible = [
+                    assign[(d, day, shift, p)]
+                    for p in projects
+                    if (d, day, shift, p) in assign
+                ]
+                if possible:
+                    model.Add(sum(possible) == work[(d, day, shift)])
+                    model.Add(sum(possible) <= 1)
+                else:
+                    model.Add(work[(d, day, shift)] == 0)
+
+    # -----------------------------
+    # Core constraints
+    # -----------------------------
+
+    # At most 1 shift per day per developer
+    for d in developers:
+        for day in range(7):
+            model.Add(work[(d, day, 0)] + work[(d, day, 1)] <= 1)
+
+    # At most 3 developers per shift
+    for day in range(7):
+        for shift in range(2):
+            model.Add(sum(work[(d, day, shift)] for d in developers) <= 3)
+
+    # Exact effort for each project
+    for p in projects:
+        model.Add(
+            sum(
+                assign[(d, day, shift, p)]
+                for d in developers
+                for day in range(7)
+                for shift in range(2)
+                if (d, day, shift, p) in assign
+            ) == effort[p]
+        )
+
+    # If PB appears in a shift, PE must also appear in that shift
+    for d in developers:
+        for day in range(7):
+            for shift in range(2):
+                if (d, day, shift, 'PB') in assign:
+                    pe_same_shift = [
+                        assign[(d2, day, shift, 'PE')]
+                        for d2 in developers
+                        if (d2, day, shift, 'PE') in assign
+                    ]
+                    if pe_same_shift:
+                        model.Add(assign[(d, day, shift, 'PB')] <= sum(pe_same_shift))
+                    else:
+                        model.Add(assign[(d, day, shift, 'PB')] == 0)
+
+    # PD must be fully done before PA starts
+    for d in developers:
+        for day in range(7):
+            for shift in range(2):
+                if (d, day, shift, 'PA') in assign:
+                    t = slot(day, shift)
+                    pd_before = [
+                        assign[(d2, prev_day, prev_shift, 'PD')]
+                        for d2 in developers
+                        for prev_day in range(7)
+                        for prev_shift in range(2)
+                        if (d2, prev_day, prev_shift, 'PD') in assign and slot(prev_day, prev_shift) < t
+                    ]
+                    if len(pd_before) < effort['PD']:
+                        model.Add(assign[(d, day, shift, 'PA')] == 0)
+                    else:
+                        model.Add(effort['PD'] * assign[(d, day, shift, 'PA')] <= sum(pd_before))
+
+    # Need 3 PA developer-shifts before any PC starts
+    for d in developers:
+        for day in range(7):
+            for shift in range(2):
+                if (d, day, shift, 'PC') in assign:
+                    t = slot(day, shift)
+                    pa_before = [
+                        assign[(d2, prev_day, prev_shift, 'PA')]
+                        for d2 in developers
+                        for prev_day in range(7)
+                        for prev_shift in range(2)
+                        if (d2, prev_day, prev_shift, 'PA') in assign and slot(prev_day, prev_shift) < t
+                    ]
+                    if len(pa_before) < 3:
+                        model.Add(assign[(d, day, shift, 'PC')] == 0)
+                    else:
+                        model.Add(3 * assign[(d, day, shift, 'PC')] <= sum(pa_before))
+
+    # At most 2 developers on the same project in the same shift
+    for day in range(7):
+        for shift in range(2):
             for p in projects:
-                if p in eligibility[d]:
-                    assign[(d, di, si, p)] = model.NewBoolVar(f'assign_{d}_{di}_{si}_{p}')
+                model.Add(
+                    sum(
+                        assign[(d, day, shift, p)]
+                        for d in developers
+                        if (d, day, shift, p) in assign
+                    ) <= 2
+                )
 
-# work[(d, di, si)] = 1 iff developer d works any project in that shift
-work = {}
-for d in devs:
-    for di in range(7):
-        for si in range(2):
-            work[(d, di, si)] = model.NewBoolVar(f'work_{d}_{di}_{si}')
-            eligible_assigns = [
-                assign[(d, di, si, p)]
-                for p in projects
-                if (d, di, si, p) in assign
+    # Evening shift -> no next morning
+    for d in developers:
+        for day in range(6):
+            model.Add(work[(d, day, 1)] + work[(d, day + 1, 0)] <= 1)
+
+    # -----------------------------
+    # Availability and conflicts
+    # -----------------------------
+
+    # DA no Evening
+    for day in range(7):
+        model.Add(work[('DA', day, 1)] == 0)
+
+    # DL no Morning
+    for day in range(7):
+        model.Add(work[('DL', day, 0)] == 0)
+
+    # DJ and DK off Sunday
+    for shift in range(2):
+        model.Add(work[('DJ', 0, shift)] == 0)
+        model.Add(work[('DK', 0, shift)] == 0)
+
+    # DM off Monday and Friday
+    for shift in range(2):
+        model.Add(work[('DM', 1, shift)] == 0)
+        model.Add(work[('DM', 5, shift)] == 0)
+
+    # DN no Evening
+    for day in range(7):
+        model.Add(work[('DN', day, 1)] == 0)
+
+    # DR off Wednesday and Thursday
+    for shift in range(2):
+        model.Add(work[('DR', 3, shift)] == 0)
+        model.Add(work[('DR', 4, shift)] == 0)
+
+    # DB off Tuesday
+    for shift in range(2):
+        model.Add(work[('DB', 2, shift)] == 0)
+
+    # DN cannot work with DB
+    for day in range(7):
+        for shift in range(2):
+            model.Add(work[('DN', day, shift)] + work[('DB', day, shift)] <= 1)
+
+    # DR cannot work with DC
+    for day in range(7):
+        for shift in range(2):
+            model.Add(work[('DR', day, shift)] + work[('DC', day, shift)] <= 1)
+
+    # DC and DD cannot work together
+    for day in range(7):
+        for shift in range(2):
+            model.Add(work[('DC', day, shift)] + work[('DD', day, shift)] <= 1)
+
+    # If DI works on PE, one of DL / DJ / DK must also be in that shift
+    for day in range(7):
+        for shift in range(2):
+            if ('DI', day, shift, 'PE') in assign:
+                model.Add(
+                    assign[('DI', day, shift, 'PE')] <=
+                    work[('DL', day, shift)] + work[('DJ', day, shift)] + work[('DK', day, shift)]
+                )
+
+    # -----------------------------
+    # Project E shift pattern
+    # -----------------------------
+    pe_active = {}
+    for day in range(7):
+        for shift in range(2):
+            pe_active[(day, shift)] = model.NewBoolVar(f'pe_active_{day}_{shift}')
+            pe_assignments = [
+                assign[(d, day, shift, 'PE')]
+                for d in developers
+                if (d, day, shift, 'PE') in assign
             ]
-            if eligible_assigns:
-                model.Add(sum(eligible_assigns) == work[(d, di, si)])
-                model.Add(sum(eligible_assigns) <= 1)
+            if pe_assignments:
+                model.AddMaxEquality(pe_active[(day, shift)], pe_assignments)
             else:
-                model.Add(work[(d, di, si)] == 0)
+                model.Add(pe_active[(day, shift)] == 0)
 
-# ============================================================
-# CORE CONSTRAINTS
-# ============================================================
+    model.Add(sum(pe_active[(day, shift)] for day in range(7) for shift in range(2)) == 5)
+    model.Add(sum(pe_active[(day, 1)] for day in range(7)) >= 2)
 
-# 1) At most 1 shift per day per developer
-for d in devs:
-    for di in range(7):
-        model.Add(work[(d, di, 0)] + work[(d, di, 1)] <= 1)
-
-# 2) At most 3 developers per shift
-for di in range(7):
-    for si in range(2):
-        model.Add(sum(work[(d, di, si)] for d in devs) <= 3)
-
-# 3) Exact effort requirements
-for p in projects:
-    model.Add(
-        sum(
-            assign[(d, di, si, p)]
-            for d in devs
-            for di in range(7)
-            for si in range(2)
-            if (d, di, si, p) in assign
-        ) == effort[p]
-    )
-
-# 4) PB must imply PE in same shift
-for d in devs:
-    for di in range(7):
-        for si in range(2):
-            if (d, di, si, 'PB') in assign:
-                pe_same_shift = [
-                    assign[(d2, di, si, 'PE')]
-                    for d2 in devs
-                    if (d2, di, si, 'PE') in assign
-                ]
-                if pe_same_shift:
-                    model.Add(assign[(d, di, si, 'PB')] <= sum(pe_same_shift))
-                else:
-                    model.Add(assign[(d, di, si, 'PB')] == 0)
-
-# 5) PD fully before PA starts
-for d in devs:
-    for di in range(7):
-        for si in range(2):
-            if (d, di, si, 'PA') in assign:
-                t = slot(di, si)
-                pd_before = [
-                    assign[(d2, dj, sj, 'PD')]
-                    for d2 in devs
-                    for dj in range(7)
-                    for sj in range(2)
-                    if (d2, dj, sj, 'PD') in assign and slot(dj, sj) < t
-                ]
-                if len(pd_before) < effort['PD']:
-                    model.Add(assign[(d, di, si, 'PA')] == 0)
-                else:
-                    model.Add(effort['PD'] * assign[(d, di, si, 'PA')] <= sum(pd_before))
-
-# 6) Need 3 PA dev-shifts before any PC starts
-for d in devs:
-    for di in range(7):
-        for si in range(2):
-            if (d, di, si, 'PC') in assign:
-                t = slot(di, si)
-                pa_before = [
-                    assign[(d2, dj, sj, 'PA')]
-                    for d2 in devs
-                    for dj in range(7)
-                    for sj in range(2)
-                    if (d2, dj, sj, 'PA') in assign and slot(dj, sj) < t
-                ]
-                if len(pa_before) < 3:
-                    model.Add(assign[(d, di, si, 'PC')] == 0)
-                else:
-                    model.Add(3 * assign[(d, di, si, 'PC')] <= sum(pa_before))
-
-# 7) At most 2 developers on same project in same shift
-for di in range(7):
-    for si in range(2):
+    # -----------------------------
+    # Distinct developer caps
+    # -----------------------------
+    uses_project = {}
+    for d in developers:
         for p in projects:
-            model.Add(
-                sum(
-                    assign[(d, di, si, p)]
-                    for d in devs
-                    if (d, di, si, p) in assign
-                ) <= 2
-            )
+            uses_project[(d, p)] = model.NewBoolVar(f'uses_{d}_{p}')
+            used_somewhere = [
+                assign[(d, day, shift, p)]
+                for day in range(7)
+                for shift in range(2)
+                if (d, day, shift, p) in assign
+            ]
+            if used_somewhere:
+                model.AddMaxEquality(uses_project[(d, p)], used_somewhere)
+            else:
+                model.Add(uses_project[(d, p)] == 0)
 
-# 8) Rest rule: evening -> no next morning
-for d in devs:
-    for di in range(6):
-        model.Add(work[(d, di, 1)] + work[(d, di + 1, 0)] <= 1)
+    for p in ['PA', 'PB', 'PC', 'PD']:
+        model.Add(sum(uses_project[(d, p)] for d in developers) <= 2)
+    model.Add(sum(uses_project[(d, 'PE')] for d in developers) <= 3)
 
-# ============================================================
-# AVAILABILITY / CONFLICT CONSTRAINTS
-# ============================================================
+    # If DS uses PE anywhere, DS cannot use PB
+    model.Add(uses_project[('DS', 'PB')] == 0).OnlyEnforceIf(uses_project[('DS', 'PE')])
 
-# DA no Evening
-for di in range(7):
-    model.Add(work[('DA', di, 1)] == 0)
+    # -----------------------------
+    # Shift activation
+    # -----------------------------
+    used_shift = {}
+    for day in range(7):
+        for shift in range(2):
+            used_shift[(day, shift)] = model.NewBoolVar(f'used_shift_{day}_{shift}')
+            model.AddMaxEquality(used_shift[(day, shift)], [work[(d, day, shift)] for d in developers])
 
-# DL no Morning
-for di in range(7):
-    model.Add(work[('DL', di, 0)] == 0)
+    # -----------------------------
+    # Weekly shift counts and overtime
+    # -----------------------------
+    total_shifts = {}
+    overtime_shifts = {}
 
-# DJ, DK off Sunday
-for si in range(2):
-    model.Add(work[('DJ', 0, si)] == 0)
-    model.Add(work[('DK', 0, si)] == 0)
+    for d in developers:
+        total_shifts[d] = model.NewIntVar(0, 5, f'total_shifts_{d}')
+        model.Add(
+            total_shifts[d] == sum(work[(d, day, shift)] for day in range(7) for shift in range(2))
+        )
 
-# DM off Monday and Friday
-for si in range(2):
-    model.Add(work[('DM', 1, si)] == 0)  # Monday
-    model.Add(work[('DM', 5, si)] == 0)  # Friday
+        model.Add(total_shifts[d] <= 5)
 
-# DN no Evening
-for di in range(7):
-    model.Add(work[('DN', di, 1)] == 0)
+        if d == 'DO':
+            model.Add(total_shifts[d] <= 3)
 
-# DO max 3 shifts
-# (will add later in total_shifts section)
+        overtime_shifts[d] = model.NewIntVar(0, 5, f'overtime_shifts_{d}')
+        model.Add(overtime_shifts[d] >= total_shifts[d] - 3)
+        model.Add(overtime_shifts[d] >= 0)
+        model.Add(overtime_shifts[d] <= total_shifts[d])
 
-# DR off Wednesday and Thursday
-for si in range(2):
-    model.Add(work[('DR', 3, si)] == 0)  # Wednesday
-    model.Add(work[('DR', 4, si)] == 0)  # Thursday
+    # Exactly one developer works exactly 5 shifts
+    works_five = {}
+    for d in developers:
+        works_five[d] = model.NewBoolVar(f'works_five_{d}')
+        model.Add(total_shifts[d] == 5).OnlyEnforceIf(works_five[d])
+        model.Add(total_shifts[d] <= 4).OnlyEnforceIf(works_five[d].Not())
+    model.Add(sum(works_five[d] for d in developers) == 1)
 
-# DB off Tuesday
-for si in range(2):
-    model.Add(work[('DB', 2, si)] == 0)
+    # -----------------------------
+    # DT onboarding waiver on PE
+    # -----------------------------
+    dt_di_pair_pe = {}
+    for day in range(7):
+        for shift in range(2):
+            dt_di_pair_pe[(day, shift)] = model.NewBoolVar(f'dt_di_pair_pe_{day}_{shift}')
 
-# DN cannot work with DB
-for di in range(7):
-    for si in range(2):
-        model.Add(work[('DN', di, si)] + work[('DB', di, si)] <= 1)
+            dt_pe = assign.get(('DT', day, shift, 'PE'))
+            di_pe = assign.get(('DI', day, shift, 'PE'))
 
-# DR cannot work with DC
-for di in range(7):
-    for si in range(2):
-        model.Add(work[('DR', di, si)] + work[('DC', di, si)] <= 1)
+            if dt_pe is not None and di_pe is not None:
+                model.Add(dt_di_pair_pe[(day, shift)] <= dt_pe)
+                model.Add(dt_di_pair_pe[(day, shift)] <= di_pe)
+                model.Add(dt_di_pair_pe[(day, shift)] >= dt_pe + di_pe - 1)
+            else:
+                model.Add(dt_di_pair_pe[(day, shift)] == 0)
 
-# DC and DD cannot work together
-for di in range(7):
-    for si in range(2):
-        model.Add(work[('DC', di, si)] + work[('DD', di, si)] <= 1)
-
-# DI on PE requires DL or DJ or DK in same shift
-for di in range(7):
-    for si in range(2):
-        if ('DI', di, si, 'PE') in assign:
-            model.Add(
-                assign[('DI', di, si, 'PE')]
-                <= work[('DL', di, si)] + work[('DJ', di, si)] + work[('DK', di, si)]
-            )
-
-# ============================================================
-# PROJECT E SHIFT PATTERN
-# ============================================================
-pe_active = {}
-for di in range(7):
-    for si in range(2):
-        pe_active[(di, si)] = model.NewBoolVar(f'pe_active_{di}_{si}')
-        pe_assigns = [
-            assign[(d, di, si, 'PE')]
-            for d in devs
-            if (d, di, si, 'PE') in assign
-        ]
-        if pe_assigns:
-            model.AddMaxEquality(pe_active[(di, si)], pe_assigns)
-        else:
-            model.Add(pe_active[(di, si)] == 0)
-
-# Exactly 5 distinct PE shifts
-model.Add(sum(pe_active[(di, si)] for di in range(7) for si in range(2)) == 5)
-
-# At least 2 PE evening shifts
-model.Add(sum(pe_active[(di, 1)] for di in range(7)) >= 2)
-
-# ============================================================
-# DISTINCT DEVELOPER CAPS PER PROJECT
-# ============================================================
-uses_project = {}
-for d in devs:
-    for p in projects:
-        uses_project[(d, p)] = model.NewBoolVar(f'uses_{d}_{p}')
-        proj_assigns = [
-            assign[(d, di, si, p)]
-            for di in range(7)
-            for si in range(2)
-            if (d, di, si, p) in assign
-        ]
-        if proj_assigns:
-            model.AddMaxEquality(uses_project[(d, p)], proj_assigns)
-        else:
-            model.Add(uses_project[(d, p)] == 0)
-
-# caps
-for p in ['PA', 'PB', 'PC', 'PD']:
-    model.Add(sum(uses_project[(d, p)] for d in devs) <= 2)
-model.Add(sum(uses_project[(d, 'PE')] for d in devs) <= 3)
-
-# DS: if uses PE anywhere, cannot use PB anywhere
-model.Add(uses_project[('DS', 'PB')] == 0).OnlyEnforceIf(uses_project[('DS', 'PE')])
-
-# ============================================================
-# SHIFT ACTIVATION
-# ============================================================
-used_shift = {}
-for di in range(7):
-    for si in range(2):
-        used_shift[(di, si)] = model.NewBoolVar(f'used_shift_{di}_{si}')
-        model.AddMaxEquality(used_shift[(di, si)], [work[(d, di, si)] for d in devs])
-
-# ============================================================
-# SHIFT COUNTS / OVERTIME
-# ============================================================
-total_shifts = {}
-ot_shifts = {}
-
-for d in devs:
-    total_shifts[d] = model.NewIntVar(0, 5, f'total_shifts_{d}')
-    model.Add(
-        total_shifts[d] == sum(work[(d, di, si)] for di in range(7) for si in range(2))
+    dt_pe_waived = model.NewBoolVar('dt_pe_waived')
+    model.AddMaxEquality(
+        dt_pe_waived,
+        [dt_di_pair_pe[(day, shift)] for day in range(7) for shift in range(2)]
     )
 
-    # global max 5 shifts
-    model.Add(total_shifts[d] <= 5)
+    dt_pe_charge = model.NewBoolVar('dt_pe_charge')
+    model.Add(dt_pe_charge + dt_pe_waived == uses_project[('DT', 'PE')])
 
-    # specific max 3 shifts for DO
-    if d == 'DO':
-        model.Add(total_shifts[d] <= 3)
+    # -----------------------------
+    # Objective
+    # -----------------------------
+    labor_terms = []
+    for d in developers:
+        r = rates[d]
+        labor_terms.append(8 * r * total_shifts[d])
+        labor_terms.append(4 * r * overtime_shifts[d])
 
-    # overtime after 3 shifts (24 hours)
-    ot_shifts[d] = model.NewIntVar(0, 5, f'ot_shifts_{d}')
-    model.Add(ot_shifts[d] >= total_shifts[d] - 3)
-    model.Add(ot_shifts[d] >= 0)
-    model.Add(ot_shifts[d] <= total_shifts[d])
+    labor_cost = model.NewIntVar(0, 2_000_000, 'labor_cost')
+    model.Add(labor_cost == sum(labor_terms))
 
-# Exactly one developer must work exactly 5 shifts
-works_five = {}
-for d in devs:
-    works_five[d] = model.NewBoolVar(f'works_five_{d}')
-    model.Add(total_shifts[d] == 5).OnlyEnforceIf(works_five[d])
-    model.Add(total_shifts[d] <= 4).OnlyEnforceIf(works_five[d].Not())
-model.Add(sum(works_five[d] for d in devs) == 1)
+    shift_cost = model.NewIntVar(0, 2_000_000, 'shift_cost')
+    model.Add(
+        shift_cost ==
+        sum(20 * used_shift[(day, 0)] + 200 * used_shift[(day, 1)] for day in range(7))
+    )
 
-# ============================================================
-# ONBOARDING WAIVER FOR (DT, PE) IF DT AND DI WORK TOGETHER ON PE
-# ============================================================
-dt_di_pair_pe = {}
-for di in range(7):
-    for si in range(2):
-        dt_di_pair_pe[(di, si)] = model.NewBoolVar(f'dt_di_pair_pe_{di}_{si}')
+    onboarding_terms = []
+    for d in developers:
+        for p in projects:
+            if d == 'DT' and p == 'PE':
+                continue
+            onboarding_terms.append(onboarding_costs[p] * uses_project[(d, p)])
 
-        dt_pe = assign.get(('DT', di, si, 'PE'), None)
-        di_pe = assign.get(('DI', di, si, 'PE'), None)
+    onboarding_terms.append(onboarding_costs['PE'] * dt_pe_charge)
 
-        if dt_pe is not None and di_pe is not None:
-            # pair = AND(dt_pe, di_pe)
-            model.Add(dt_di_pair_pe[(di, si)] <= dt_pe)
-            model.Add(dt_di_pair_pe[(di, si)] <= di_pe)
-            model.Add(dt_di_pair_pe[(di, si)] >= dt_pe + di_pe - 1)
-        else:
-            model.Add(dt_di_pair_pe[(di, si)] == 0)
+    onboarding_cost = model.NewIntVar(0, 2_000_000, 'onboarding_cost')
+    model.Add(onboarding_cost == sum(onboarding_terms))
 
-dt_pe_waived = model.NewBoolVar('dt_pe_waived')
-model.AddMaxEquality(dt_pe_waived, [dt_di_pair_pe[(di, si)] for di in range(7) for si in range(2)])
+    minimum_cost = model.NewIntVar(0, 5_000_000, 'minimum_cost')
+    model.Add(minimum_cost == labor_cost + shift_cost + onboarding_cost)
 
-# charge flag for (DT, PE): 1 if DT uses PE and waiver does not apply
-dt_pe_charge = model.NewBoolVar('dt_pe_charge')
-model.Add(dt_pe_charge + dt_pe_waived == uses_project[('DT', 'PE')])
+    model.Minimize(minimum_cost)
 
-# ============================================================
-# OBJECTIVE
-# ============================================================
+    # -----------------------------
+    # Solve
+    # -----------------------------
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = 500
+    solver.parameters.num_search_workers = 8
 
-# labor cost
-labor_terms = []
-for d in devs:
-    r = rates[d]
-    labor_terms.append(8 * r * total_shifts[d])   # base pay on all shifts
-    labor_terms.append(4 * r * ot_shifts[d])      # extra 0.5x for overtime shifts
+    status = solver.Solve(model)
 
-labor_cost = model.NewIntVar(0, 2_000_000, 'labor_cost')
-model.Add(labor_cost == sum(labor_terms))
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        schedule = {}
 
-# shift operating cost
-shift_operating_cost = model.NewIntVar(0, 2_000_000, 'shift_operating_cost')
-model.Add(
-    shift_operating_cost ==
-    sum(20 * used_shift[(di, 0)] + 200 * used_shift[(di, 1)] for di in range(7))
-)
+        for day in range(7):
+            day_name = days[day]
+            schedule[day_name] = {}
 
-# onboarding cost
-onboarding_terms = []
+            for shift in range(2):
+                shift_name = shift_names[shift]
+                devs_in_shift = []
+                projects_in_shift = []
 
-for d in devs:
-    for p in projects:
-        if d == 'DT' and p == 'PE':
-            # handled separately with waiver
-            continue
-        onboarding_terms.append(onboarding_costs[p] * uses_project[(d, p)])
+                for d in developers:
+                    if solver.Value(work[(d, day, shift)]) == 1:
+                        for p in projects:
+                            if (d, day, shift, p) in assign and solver.Value(assign[(d, day, shift, p)]) == 1:
+                                devs_in_shift.append(d)
+                                projects_in_shift.append(p)
+                                break
 
-# add DT/PE charge only if not waived
-onboarding_terms.append(onboarding_costs['PE'] * dt_pe_charge)
+                schedule[day_name][shift_name] = {
+                    "Devs": devs_in_shift,
+                    "Projects": projects_in_shift
+                }
 
-onboarding_cost = model.NewIntVar(0, 2_000_000, 'onboarding_cost')
-model.Add(onboarding_cost == sum(onboarding_terms))
+        print(json.dumps({"minimum_cost": str(solver.Value(minimum_cost))}))
+        print()
+        print(json.dumps({"schedule": schedule}, indent=2))
 
-# total cost
-total_cost = model.NewIntVar(0, 5_000_000, 'total_cost')
-model.Add(total_cost == labor_cost + shift_operating_cost + onboarding_cost)
+    else:
+        empty_schedule = {
+            day_name: {
+                "Morning": {"Devs": [], "Projects": []},
+                "Evening": {"Devs": [], "Projects": []}
+            }
+            for day_name in days
+        }
 
-model.Minimize(total_cost)
+        print(json.dumps({"minimum_cost": "No feasible solution found"}))
+        print()
+        print(json.dumps({"schedule": empty_schedule}, indent=2))
 
-# ============================================================
-# SOLVE
-# ============================================================
-solver = cp_model.CpSolver()
-solver.parameters.max_time_in_seconds = 500
-solver.parameters.num_search_workers = 8
 
-status = solver.Solve(model)
-
-print(f"Solver status: {solver.StatusName(status)}")
-print(f"Wall time: {solver.WallTime():.2f}s")
-print()
-
-if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-    opt_total = solver.Value(total_cost)
-    opt_labor = solver.Value(labor_cost)
-    opt_shift = solver.Value(shift_operating_cost)
-    opt_onboarding = solver.Value(onboarding_cost)
-
-    print(json.dumps({"minimum_cost": str(opt_total)}))
-    print()
-    print(json.dumps({
-        "labor_cost": str(opt_labor),
-        "shift_operating_cost": str(opt_shift),
-        "onboarding_cost": str(opt_onboarding)
-    }))
-    print()
-
-    # Build schedule JSON
-    schedule = {}
-    for di in range(7):
-        day_name = days[di]
-        day_dict = {}
-        for si in range(2):
-            shift_name = shifts[si]
-            devs_in = []
-            projects_in = []
-            for d in devs:
-                if solver.Value(work[(d, di, si)]) == 1:
-                    for p in projects:
-                        if (d, di, si, p) in assign and solver.Value(assign[(d, di, si, p)]) == 1:
-                            devs_in.append(d)
-                            projects_in.append(p)
-                            break
-            if devs_in:
-                day_dict[shift_name] = {"Devs": devs_in, "Projects": projects_in}
-        if day_dict:
-            schedule[day_name] = day_dict
-
-    print(json.dumps({"schedule": schedule}, indent=2))
-    print()
-
-    # Helpful debug info
-    print("=" * 60)
-    print("DEVELOPER SUMMARY")
-    print("=" * 60)
-    for d in devs:
-        ts = solver.Value(total_shifts[d])
-        ots = solver.Value(ot_shifts[d])
-        if ts > 0:
-            total_hours = ts * 8
-            ot_hours = ots * 8
-            reg_hours = total_hours - ot_hours
-            dev_cost = reg_hours * rates[d] + ot_hours * rates[d] * 1.5
-            five_flag = solver.Value(works_five[d])
-            print(f"{d}: {ts} shifts, {total_hours}h total, {ot_hours}h OT, cost=${dev_cost:.0f}, works_five={five_flag}")
-
-    print()
-    print("=" * 60)
-    print("PROJECT DISTINCT DEVELOPER COUNTS")
-    print("=" * 60)
-    for p in projects:
-        used_devs = [d for d in devs if solver.Value(uses_project[(d, p)]) == 1]
-        print(f"{p}: {len(used_devs)} -> {used_devs}")
-
-    print()
-    print("=" * 60)
-    print("PE ACTIVE SHIFTS")
-    print("=" * 60)
-    pe_shifts = []
-    for di in range(7):
-        for si in range(2):
-            if solver.Value(pe_active[(di, si)]) == 1:
-                pe_shifts.append(f"{days[di]} {shifts[si]}")
-    print(pe_shifts)
-    print(f"PE evening shift count: {sum(solver.Value(pe_active[(di, 1)]) for di in range(7))}")
-
-    print()
-    print("=" * 60)
-    print("ONBOARDING BREAKDOWN")
-    print("=" * 60)
-    for p in projects:
-        used_devs = [d for d in devs if solver.Value(uses_project[(d, p)]) == 1]
-        if p == 'PE' and 'DT' in used_devs and solver.Value(dt_pe_waived) == 1:
-            adjusted = [d for d in used_devs if d != 'DT']
-            print(f"{p}: {used_devs} -> DT onboarding waived, charged developers: {adjusted}")
-        else:
-            print(f"{p}: {used_devs}")
-else:
-    print("No feasible solution found.")
+if __name__ == "__main__":
+    main()
